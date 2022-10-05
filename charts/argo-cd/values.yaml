@@ -8,3 +8,6 @@ argo-cd:
         name: argo-cd
         type: helm
         url: https://argoproj.github.io/argo-helm
+  server:
+    service:
+      type: NodePort
