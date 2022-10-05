@@ -9,6 +9,7 @@ helm dependency build charts/argo-cd
 helm install argo-cd charts/argo-cd \
     --namespace argocd \
     --create-namespace
+helm template apps/ | kubectl apply -f -
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
 ```
 
