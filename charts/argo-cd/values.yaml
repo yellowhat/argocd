@@ -1,11 +1,10 @@
 argo-cd:
-  dex:
-    enabled: false
-  server:
-    extraArgs:
-      - --insecure
-    config:
-      repositories: |
-        - type: helm
-          name: argo-cd
-          url: https://argoproj.github.io/argo-helm
+  crds:
+    install: true
+    keep: false
+  config:
+    repositories:
+      argo-cd:
+        name: argo-cd
+        type: helm
+        url: https://argoproj.github.io/argo-helm
