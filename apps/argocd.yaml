@@ -11,6 +11,9 @@ spec:
     repoURL: https://github.com/yellowhat/argocd.git
     path: charts/argo-cd
     targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
