@@ -26,3 +26,5 @@ spec:
         factor: 2
     syncOptions:
       - CreateNamespace=true
+    directory:
+      recurse: false
