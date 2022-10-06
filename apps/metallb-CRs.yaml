@@ -3,7 +3,7 @@ kind: Application
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
-  name: app-of-apps
+  name: metallb-crs
   namespace: argocd
 spec:
   source:
