@@ -12,7 +12,7 @@ spec:
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Release.Namespace }}
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
