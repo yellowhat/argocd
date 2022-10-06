@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 spec:
   source:
-    path: argocd/applications
+    path: apps
     repoURL: "https://github.com/yellowhat/argocd"
     targetRevision: main
   destination:
