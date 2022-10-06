@@ -8,12 +8,12 @@ spec:
   addresses:
     - 10.1.0.100-10.1.0.120
 
----
-apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
-metadata:
-  name: middle
-  namespace: metallb
-spec:
-  ipAddressPools:
-    - pool
+#---
+#apiVersion: metallb.io/v1beta1
+#kind: L2Advertisement
+#metadata:
+#  name: middle
+#  namespace: metallb
+#spec:
+#  ipAddressPools:
+#    - pool
