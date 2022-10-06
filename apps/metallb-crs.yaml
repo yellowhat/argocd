@@ -3,13 +3,13 @@ kind: Application
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-  name: apps/metallb-crs
+  name: metallb-crs
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: "https://github.com/yellowhat/argocd"
-    path: metallb-crs
+    path: apps/metallb-crs
     targetRevision: HEAD
   destination:
     namespace: metallb
