@@ -1,0 +1,7 @@
+argo-cd:
+  crds:
+    install: true
+    keep: false
+  server:
+    service:
+      type: NodePort

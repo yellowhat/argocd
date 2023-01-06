@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "pihole.fullname" . }}-test-dns"
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: dig
+      image: tailzip/bind-tools:latest
+      args:
+        - 'dig'
+        - '@{{ include "pihole.fullname" . }}-dns-udp.{{ .Release.Namespace }}.svc.cluster.local'
+        - 'google.com'
+  restartPolicy: Never

@@ -1,0 +1,92 @@
+# https://github.com/prometheus-operator/prometheus-operator/issues/4439#issuecomment-1030198014
+# https://github.com/prometheus-community/helm-charts/issues/1500#issuecomment-969031148
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: prometheus-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/prometheus-community/helm-charts.git
+    path: charts/kube-prometheus-stack/crds
+    targetRevision: kube-prometheus-stack-40.5.0
+    directory:
+      recurse: true
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Replace=true
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: prometheus
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 40.5.0
+    helm:
+      skipCrds: true
+      parameters:
+        - name: grafana.adminUser
+          value: "admin"
+        - name: grafana.adminPassword
+          value: "grafana"
+        - name: grafana.service.enabled
+          value: "true"
+        - name: grafana.service.type
+          value: "NodePort"
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "2"
+#   name: prometheus-loki
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     chart: loki-stack
+#     repoURL: https://grafana.github.io/helm-charts
+#     targetRevision: 2.8.3
+#     helm:
+#       skipCrds: true
+#       parameters:
+#         - name: loki.isDefault
+#           value: "false"
+#   destination:
+#     name: in-cluster
+#     namespace: monitoring
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true

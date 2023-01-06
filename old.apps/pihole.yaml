@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: pihole
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: pihole
+    repoURL: https://gitlab.com/api/v4/projects/40025817/packages/helm/stable
+    targetRevision: 0.1.0
+    helm:
+      valueFiles:
+        - ci/mule-values.yaml
+  destination:
+    namespace: pihole
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,25 @@
+---
+sealed-secrets:
+  keyrenewperiod: "0"  # deactivate automatic key renewal
+
+  resources:
+    limits:
+      cpu: 150m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 256Mi
+
+kube-prometheus-stack:
+  alertmanager:
+    enabled: false
+
+  grafana:
+    admin:
+      existingSecret: grafana-admin
+      userKey: username
+      passwordKey: password
+
+    service:
+      enabled: true
+      type: NodePort
