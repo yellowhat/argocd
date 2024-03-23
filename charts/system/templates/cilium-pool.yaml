@@ -1,0 +1,17 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: pool
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  cidrs:
+    # 192.168.1.192|207
+    - cidr: 192.168.1.200/28
+    # 192.168.1.200|220
+    # - cidr: 192.168.1.200/29
+    # - cidr: 192.168.1.208/29
+    # - cidr: 192.168.1.216/30
+    # - cidr: 192.168.1.220/31

@@ -1,0 +1,63 @@
+---
+prometheus-blackbox-exporter:
+  # securityContext:
+  #   capabilities:
+  #     add:
+  #       - NET_RAW # Enable ICMP
+
+  config:
+    modules:
+      http:
+        prober: http
+        timeout: 5s
+        http:
+          method: GET
+          valid_http_versions:
+            - "HTTP/1.1"
+            - "HTTP/2.0"
+          follow_redirects: true
+          preferred_ip_protocol: ip4
+      # dns:
+      #   prober: dns
+      # tcp:
+      #   prober: tcp
+      #   timeout: 5s
+      #   tcp:
+      #     tls: true
+      # icmp:
+      #   prober: icmp
+      #   timeout: 5s
+      #   icmp:
+      #     preferred_ip_protocol: ip4
+      #     source_ip_address: "127.0.0.1"
+
+  serviceMonitor:
+    enabled: true
+    selfMonitor:
+      enabled: true
+    defaults:
+      interval: 120s
+      scrapeTimeout: 10s
+    targets:
+      - name: gitlab
+        url: https://gitlab.com
+        module: http
+      - name: github
+        url: https://github.com
+        module: http
+      - name: google
+        url: https://google.com
+        module: http
+      - name: searx
+        url: https://searx-prod-test-2ls8g9.mo4.mogenius.io
+        module: http
+      - name: grafana
+        url: "http://192.168.1.200"
+        module: http
+      - name: blocky
+        url: "http://192.168.1.201"
+        module: http
+      - name: jellyfin
+        url: "http://192.168.1.202"
+        module: http
+

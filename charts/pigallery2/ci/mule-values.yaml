@@ -1,0 +1,39 @@
+---
+service:
+  type: NodePort
+
+ingress:
+  enabled: true
+  ingressClassName: cilium
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: pigallery2.mukka.haus
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: pigallery2  # pragma: allowlist secret
+      hosts:
+        - pigallery2.mukka.haus
+
+persistence:
+  data:
+    enabled: true
+    mountPath: /app/data
+    storageClassName: pigallery2
+    accessModes:
+      - ReadWriteOnce
+    size: 100Gi
+
+extraManifests:
+  - apiVersion: cilium.io/v2
+    kind: CiliumNetworkPolicy
+    metadata:
+      name: restrict
+    spec:
+      # Apply to all pods in namespacee
+      endpointSelector: {}
+    egress:
+      # Default deny
+      - {}

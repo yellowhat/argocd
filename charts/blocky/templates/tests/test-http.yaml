@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "blocky.fullname" . }}-test-http
+  labels:
+    {{- include "blocky.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: test
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: curl
+      image: curlimages/curl
+      args:
+        - curl
+        - --verbose
+        - http://{{ include "blocky.fullname" . }}

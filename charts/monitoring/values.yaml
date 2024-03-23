@@ -1,0 +1,216 @@
+---
+sealed-secrets:
+  keyrenewperiod: "0"  # deactivate automatic key renewal
+  resources:
+    limits:
+      cpu: 150m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 256Mi
+
+# loki-stack:
+#   loki:
+#     isDefault: false
+#     auth_enabled: false
+#     persistence:
+#       enabled: "true"
+#       accessModes:
+#         - ReadWriteOnce
+#       size: 10Gi
+#       storageClassName: loki
+#     # config:
+#     #   table_manager:
+#     #     retention_deletes_enabled: true
+#     #     retention_period: 72h
+#     serviceMonitor:
+#       enabled: true
+#   promtail:
+#     config:
+#       clients:
+#         - url: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push
+#     serviceMonitor:
+#       enabled: true
+
+loki:
+  loki:
+    analytics:
+      reporting_enabled: false
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    limits_config:
+      retention_period: 7d
+      max_query_series: 100000
+      max_query_parallelism: 4
+    rulerConfig:
+      alertmanager_url: http://system-kube-prometheus-sta-alertmanager:9093
+    server:
+      log_level: warn
+    storage:
+      type: filesystem
+    storage_config:
+      filesystem:
+        directory: /var/loki
+  gateway:
+    verboseLogging: false
+    affinity: ""
+  singleBinary:
+    replicas: 1
+    persistence:
+      storageClass: loki
+      size: 20Gi
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  # Disable as Grafana Agent Operator is still beta
+  # - https://github.com/grafana/loki/issues/7546
+  # - https://github.com/grafana/loki/issues/7488
+  monitoring:
+    selfMonitoring:
+      enabled: false # Disable, as this relies on Grafana Agent Operator
+      grafanaAgent:
+        installOperator: false # Disable operator for now (still beta)
+      lokiCanary:
+        enabled: false # Disable, as this relies on Grafana Agent Operator
+    serviceMonitor:
+      enabled: false
+    lokiCanary:
+      enabled: true
+      extraArgs:
+        - -interval=10s  # Reduce from 1s to 10s
+  # Disable as it requires selfMonitoring
+  test:
+    enabled: false
+
+promtail:
+  config:
+    # clients:
+    #   - url: http://system-loki:3100/loki/api/v1/push
+    logLevel: warn
+  # Fix for SELinux
+  containerSecurityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
+
+kube-prometheus-stack:
+  alertmanager:
+    enabled: true
+
+  grafana:
+    admin:
+      existingSecret: grafana-admin  # pragma: allowlist secret
+      userKey: username
+      passwordKey: password  # pragma: allowlist secret
+    grafana.ini:
+      analytics:
+        reporting_enabled: false
+        check_for_updates: false
+        check_for_plugin_updates: false
+      # log:
+      #   level: warn
+      panels:
+        disable_sanitize_html: true  # Allow script tags in text panels for blocky
+    additionalDataSources:
+      - name: loki
+        type: loki
+        url: http://system-loki:3100
+        orgId: 1
+        version: 1
+        jsonData:
+          timeout: 600
+
+    # additionalDataSources:
+    #   - name: influxdb
+    #     type: influxdb
+    #     url: http://{{ printf "%s-influxdb2.%s.svc" .Release.Name .Release.Namespace }}
+    #     orgId: 1
+    #     access: proxy
+    #     basicAuth: false
+    #     jsonData:
+    #       defaultBucket: default
+    #       organization: influxdata
+    #       version: Flux
+    #     secureJsonData:
+    #       token: "0123456789ABCDEF"
+    # env:
+    #   - name: GF_ANALYTICS_REPORTING_ENABLED
+    #     values: "false"
+
+    sidecar:
+      dashboards:
+        enabled: true
+        logLevel: WARN
+        label: grafana_dashboard
+        folderAnnotation: grafana_dashboard_folder
+        provider:
+          foldersFromFilesStructure: true
+
+    # service:
+    #   enabled: true
+    #   # type: NodePort
+    #   # type: LoadBalancer
+    #   annotations:
+    #     io.cilium/lb-ipam-ips: 192.168.1.200
+    #     # metallb.universe.tf/loadBalancerIPs: 192.168.178.200
+
+    ingress:
+      enabled: true
+      ingressClassName: cilium
+
+  prometheus:
+    service:
+      # type: NodePort
+      type: LoadBalancer
+      # annotations:
+      #   io.cilium/lb-ipam-ips: 192.168.0.226
+    prometheusSpec:
+      # Do not require labels to scrape serviceMonitor
+      serviceMonitorSelectorNilUsesHelmValues: false
+      # additionalScrapeConfigs:
+      #   - job_name: tasmota
+      #     metrics_path: /metrics
+      #     static_configs:
+      #       - targets:
+      #           - 192.168.178.100
+      #           - 192.168.178.101
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: prometheus
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Gi
+      retention: "1y"
+      retentionSize: "50GB"
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 2000
+        runAsUser: 1000
+        fsGroup: 2000
+        fsGroupChangePolicy: "OnRootMismatch"
+
+# influxdb2:
+#   image:
+#     tag: 2.6.1-alpine
+#   adminUser:
+#     organization: "influxdata"
+#     bucket: "default"
+#     user: "admin"
+#     password: "influxdb"  # pragma: allowlist secret
+#     token: "0123456789ABCDEF"
+#   env:
+#     - name: INFLUXDB_REPORTING_DISABLED
+#       value: "true"
+#     - name: INFLUXD_REPORTING_DISABLED
+#       value: "true"
+#   persistence:
+#     enabled: true
+#     storageClass: influxdb
+#     accessMode: ReadWriteOnce
+#     size: 50Gi

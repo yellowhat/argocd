@@ -1,0 +1,38 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: ansible
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: "Replace"
+  startingDeadlineSeconds: 0
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  workflowSpec:
+    entrypoint: git-clone
+    volumes:
+      - name: ssh
+        secret:
+          secretName: ssh-private-key
+          defaultMode: 384 # "0600"
+    templates:
+      - name: git-clone
+        inputs:
+          artifacts:
+            - name: source
+              path: /src
+              git:
+                # repo: https://gitlab.com/yellowhat-labs/mule.git
+                repo: https://github.com/yellowhat/argocd.git
+                depth: 1
+        container:
+          image: registry.gitlab.com/yellowhat-labs/mule:main
+          command:
+            - ansible-playbook
+          args:
+            - install.yaml
+          workingDir: /src/ansible
+          volumeMounts:
+            - name: ssh
+              mountPath: "/ssh"

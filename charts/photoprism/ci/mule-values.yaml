@@ -1,0 +1,6 @@
+---
+persistence:
+  enabled: false
+
+service:
+  type: NodePort

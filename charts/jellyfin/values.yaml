@@ -1,0 +1,118 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+# -- Replaces the generated name
+fullnameOverride: ""
+
+# -- Number of replicas
+replicaCount: 1
+
+# -- Deployment strategy
+strategyType: RollingUpdate
+
+# -- Maximum number of Pods that can be created over the desired number of Pods (RollingUpdate)
+maxSurge: 1
+
+# -- Maximum number of Pods that can be unavailable during the update process (RollingUpdate)
+maxUnavailable: 1
+
+image:
+  # -- Repository to pull the image from
+  repository: "docker.io/jellyfin/jellyfin"
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: IfNotPresent
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext: {}
+# runAsUser: 1000
+# runAsGroup: 3000
+# fsGroup: 2000
+
+# -- Privileges and access control settings for a container
+securityContext: {}
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraVolumes: []
+# - name: dri
+#   hostPath:
+#     path: /dev/dri
+
+# -- Extra volume mount definition
+extraVolumeMounts: []
+# - name: dri
+#   mountPath: /dev/dri
+
+service:
+  annotations: {}
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  # - host: example.local
+  #   paths:
+  #     - path: /
+  #       pathType: ImplementationSpecific
+  tls: []
+  # - secretName: example-tls
+  #   hosts:
+  #     - example.local
+
+persistence:
+  config:
+    # -- Enable persistence for the configuration
+    enabled: false
+    annotations: {}
+    # -- Storage class
+    # storageClassName: ""
+    # -- Reuse an existing claim
+    # existingClaim: your-claim
+    # subPath: some-subpath
+    # -- Access Modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size
+    size: 1Gi
+  media:
+    # -- Enable persistence for the media
+    enabled: false
+    annotations: {}
+    # -- Storage class
+    # storageClassName: ""
+    # -- Reuse an existing claim
+    # existingClaim: ""
+    # subPath: some-subpath
+    # -- Access Modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size
+    size: 10Gi

@@ -1,0 +1,38 @@
+---
+podSecurityContext:
+  runAsNonRoot: true
+  runAsGroup: 1000
+  runAsUser: 1000
+  fsGroup: 1000
+  fsGroupChangePolicy: "OnRootMismatch"
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  annotations:
+    # metallb.universe.tf/loadBalancerIPs: "192.168.178.202"
+    io.cilium/lb-ipam-ips: 192.168.1.223
+  type: LoadBalancer
+
+# Hardware acceleration (to be tested)
+# extraVolumes:
+#   - name: dri
+#     hostPath:
+#       path: /dev/dri
+# extraVolumeMounts:
+#   - name: dri
+#     mountPath: /dev/dri
+
+persistence:
+  config:
+    enabled: true
+    storageClassName: jellyfin-config
+    size: 1Gi
+  media:
+    enabled: true
+    storageClassName: jellyfin-media
+    size: 100Gi

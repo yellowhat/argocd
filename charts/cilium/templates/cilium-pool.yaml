@@ -1,0 +1,27 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: default
+spec:
+  cidrs:
+    # 192.168.1.220|250
+    - cidr: 192.168.0.220/30
+    - cidr: 192.168.0.224/28
+    - cidr: 192.168.0.240/29
+    - cidr: 192.168.0.248/31
+    - cidr: 192.168.0.250/32
+
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: static
+spec:
+  cidrs:
+  # 192.168.1.200|215
+  - cidr: 192.168.0.200/29
+  - cidr: 192.168.0.208/29
+  serviceSelector:
+    matchLabels:
+      lb-pool: static

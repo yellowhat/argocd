@@ -1,0 +1,37 @@
+---
+apiVersion: v2
+name: monitoring
+description: Install monitoring
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/system
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://github.com/grafana/loki/tree/main/production/helm/loki
+  - https://github.com/grafana/helm-charts/tree/main/charts/promtail
+  - https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+  - https://github.com/bitnami-labs/sealed-secrets
+  # - https://github.com/influxdata/helm-charts/tree/master/charts/influxdb2
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/system
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: kube-prometheus-stack
+    version: 48.2.2
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: loki
+    version: 5.9.2
+    repository: https://grafana.github.io/helm-charts
+  - name: promtail
+    version: 6.11.9
+    repository: https://grafana.github.io/helm-charts
+  - name: sealed-secrets
+    version: 2.11.0
+    repository: https://bitnami-labs.github.io/sealed-secrets
+  # - name: loki-stack
+  #   version: 2.9.9
+  # - name: influxdb2
+  #   version: 2.1.1
+  #   repository: https://helm.influxdata.com

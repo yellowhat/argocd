@@ -1,0 +1,21 @@
+---
+argo-workflows:
+  controller:
+    logging:
+      format: text
+      level: warn
+    metricsConfig:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+  server:
+    enabled: true
+    replicas: 1
+    extraArgs:
+      - --auth-mode=server
+    serviceType: NodePort
+    serviceNodePort: 30280
+    logging:
+      format: text
+      level: warn

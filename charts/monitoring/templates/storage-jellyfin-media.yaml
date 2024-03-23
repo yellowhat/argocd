@@ -1,0 +1,31 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: jellyfin-media
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-media
+  labels:
+    type: local
+spec:
+  storageClassName: jellyfin-media
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: "/data/jellyfin-media"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: disk
+              operator: In
+              values:
+                - local

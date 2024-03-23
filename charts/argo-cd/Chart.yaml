@@ -1,0 +1,19 @@
+---
+apiVersion: v2
+name: argo-cd
+description: Install argo-cd
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/argo-cd
+type: application
+version: 1.0.0
+appVersion: 5.53.8
+icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+sources:
+  - https://argo-cd.readthedocs.io/en/stable
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/argo-cd
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: argo-cd
+    version: 5.53.8
+    repository: https://argoproj.github.io/argo-helm
