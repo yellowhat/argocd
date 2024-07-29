@@ -1,0 +1,24 @@
+---
+prometheus-smartctl-exporter:
+  common:
+    config:
+      collect_not_more_than_period: 120s
+
+  serviceMonitor:
+    enabled: true
+    interval: 120s
+    scrapeTimeout: 30s
+
+  prometheusRules:
+    enabled: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 40Mi
+    limits:
+      # cpu: 1000m
+      memory: 40Mi
+
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: Required host root access

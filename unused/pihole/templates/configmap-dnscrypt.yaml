@@ -1,0 +1,12 @@
+---
+{{- if and (.Values.dnscrypt.enabled) (.Values.dnscrypt.config) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pihole.fullname" . }}-dnscrypt
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+data:
+  dnscrypt-proxy.toml: |
+    {{- tpl .Values.dnscrypt.config . | nindent 4 }}
+{{- end }}

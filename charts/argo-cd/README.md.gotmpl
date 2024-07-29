@@ -1,0 +1,27 @@
+{{ template "chart.header" . }}
+
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD013 MD034 -->
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+<!-- markdownlint-enable MD013 MD034 -->
+<!-- markdownlint-restore -->
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD013 MD034 -->
+
+{{ template "chart.requirementsSection" . }}
+
+<!-- markdownlint-enable MD013 MD034 -->
+<!-- markdownlint-restore -->
+
+{{ template "helm-docs.versionFooter" . }}

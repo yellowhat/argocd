@@ -1,0 +1,40 @@
+---
+argo-workflows:
+  controller:
+    logging:
+      format: text
+      level: warn
+    metricsConfig:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+    # Use workflow service account by default as the default one:
+    # "system:serviceaccount:argo-workflows:default" cannot patch resource "pods" in API group "" in the namespace "argo-workflows"
+    workflowDefaults:
+      spec:
+        serviceAccountName: argo-workflow
+
+  server:
+    enabled: true
+    replicas: 1
+    extraArgs:
+      - --auth-mode=server
+    logging:
+      format: text
+      level: warn
+    ingress:
+      enabled: true
+      ingressClassName: cilium
+      annotations:
+        kubernetes.io/tls-acme: "true"
+      hosts:
+        - argo-workflows.mukka.haus
+      tls:
+        - secretName: argo-workflows-tls  # pragma: allowlist secret
+          hosts:
+            - argo-workflows.mukka.haus
+
+  workflow:
+    serviceAccount:
+      create: true
+      name: argo-workflow

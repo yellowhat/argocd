@@ -1,0 +1,10 @@
+---
+- name: Install Kubernetes
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Print
+    ansible.builtin.debug:
+      msg:
+        - "Bye Bye"

@@ -1,0 +1,55 @@
+{{ template "chart.header" . }}
+
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD013 MD034 -->
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+<!-- markdownlint-enable MD013 MD034 -->
+<!-- markdownlint-restore -->
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD013 MD034 -->
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+<!-- markdownlint-enable MD013 MD034 -->
+<!-- markdownlint-restore -->
+
+## Configuring Upstream DNS Resolvers
+
+By default, it will configure pod DNS automatically to use Google's `8.8.8.8` nameserver
+for upstream DNS resolution.
+You can configure this, or opt-out of pod DNS configuration completely.
+
+For example, to use Cloudflare's resolver:
+
+```yaml
+podDnsConfig:
+  enabled: true
+  policy: "None"
+  nameservers:
+  - 127.0.0.1
+  - 1.1.1.1
+```
+
+If you have other DNS policy at play (for example, when running a service mesh),
+you may not want to have `pihole-kubernetes` control this behavior.
+In that case, you can disable DNS configuration on `pihole` pods:
+
+```yaml
+podDnsConfig:
+  enabled: false
+```
+
+{{ template "helm-docs.versionFooter" . }}

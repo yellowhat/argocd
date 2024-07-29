@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ebpf-exporter.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ebpf-exporter.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: metris
+      port: {{ .Values.service.port }}
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    {{- include "ebpf-exporter.selectorLabels" . | nindent 4 }}
