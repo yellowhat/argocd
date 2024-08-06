@@ -1,0 +1,19 @@
+---
+# Source: system/templates/prometheusrule.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: custom-rules
+  namespace: system
+spec:
+  groups:
+    - name: custom.rules
+      rules:
+        - alert: NodeOvertemperatureAlarm
+          expr: node_hwmon_temp_crit_alarm_celsius == 1
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: 'Host node overtemperature alarm (instance {{ $labels.instance }})'
+            description: 'Physical node temperature alarm triggered\n  VALUE = "{{ $value }}"\n  LABELS = {{ $labels }}'

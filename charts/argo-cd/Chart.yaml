@@ -4,8 +4,8 @@ name: argo-cd
 description: Install argo-cd
 home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/argo-cd
 type: application
-version: 1.9.14
-appVersion: 7.3.11
+version: 1.9.16
+appVersion: 7.4.1
 icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 sources:
   - https://argo-cd.readthedocs.io/en/stable
@@ -16,5 +16,5 @@ maintainers:
     email: yellowhat@mailbox.org
 dependencies:
   - name: argo-cd
-    version: 7.3.11
+    version: 7.4.1
     repository: https://argoproj.github.io/argo-helm

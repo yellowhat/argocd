@@ -3,7 +3,7 @@
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable MD013 MD034 -->
 
-![Version: 1.9.14](https://img.shields.io/badge/Version-1.9.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.3.11](https://img.shields.io/badge/AppVersion-7.3.11-informational?style=flat-square)
+![Version: 1.9.16](https://img.shields.io/badge/Version-1.9.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.4.1](https://img.shields.io/badge/AppVersion-7.4.1-informational?style=flat-square)
 
 <!-- markdownlint-enable MD013 MD034 -->
 <!-- markdownlint-restore -->
@@ -31,7 +31,7 @@ Install argo-cd
 
 | Repository                           | Name    | Version |
 |--------------------------------------|---------|---------|
-| https://argoproj.github.io/argo-helm | argo-cd | 7.3.11  |
+| https://argoproj.github.io/argo-helm | argo-cd | 7.4.1   |
 
 <!-- markdownlint-enable MD013 MD034 -->
 <!-- markdownlint-restore -->

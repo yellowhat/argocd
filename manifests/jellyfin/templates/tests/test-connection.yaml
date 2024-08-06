@@ -1,0 +1,37 @@
+---
+# Source: jellyfin/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "jellyfin-test-connection"
+  labels:
+    helm.sh/chart: jellyfin-1.6.9
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/version: "10.9.9"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    helm.sh/hook: test
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    ignore-check.kube-linter.io/no-liveness-probe: "Just test"
+    ignore-check.kube-linter.io/no-readiness-probe: "Just test"
+spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+  containers:
+    - name: curl
+      image: docker.io/curlimages/curl:8.6.0
+      args:
+        - curl
+        - --verbose
+        - 'jellyfin:80'
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+  restartPolicy: Never

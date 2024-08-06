@@ -1,0 +1,22 @@
+---
+# Source: cilium/charts/cilium/templates/hubble-relay/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hubble-relay-config
+  namespace: kube-system
+data:
+  config.yaml: |
+    cluster-name: default
+    peer-service: "hubble-peer.kube-system.svc.cluster.local:80"
+    listen-address: :4245
+    gops: true
+    gops-port: "9893"
+    metrics-listen-address: ":9966"
+    dial-timeout: 
+    retry-timeout: 
+    sort-buffer-len-max: 
+    sort-buffer-drain-timeout: 
+    disable-client-tls: true
+    
+    disable-server-tls: true

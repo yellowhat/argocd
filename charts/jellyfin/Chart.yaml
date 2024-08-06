@@ -4,9 +4,9 @@ name: jellyfin
 description: jellyfin helm chart
 home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/jellyfin
 type: application
-version: 1.6.8
+version: 1.6.9
 # renovate: dockerRepo=jellyfin/jellyfin
-appVersion: 10.9.8
+appVersion: 10.9.9
 icon: https://jellyfin.org/images/banner-dark.svg
 sources:
   - https://jellyfin.org

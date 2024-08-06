@@ -3,7 +3,7 @@
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable MD013 MD034 -->
 
-![Version: 1.6.8](https://img.shields.io/badge/Version-1.6.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.9.8](https://img.shields.io/badge/AppVersion-10.9.8-informational?style=flat-square)
+![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.9.9](https://img.shields.io/badge/AppVersion-10.9.9-informational?style=flat-square)
 
 <!-- markdownlint-enable MD013 MD034 -->
 <!-- markdownlint-restore -->

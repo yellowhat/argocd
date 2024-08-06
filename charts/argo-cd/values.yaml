@@ -56,15 +56,10 @@ argo-cd:
     params:
       # TLS termination on ingress
       server.insecure: true
-    secret:
-      # htpasswd -nbBC 10 "" argocd | tr -d ':\n' | sed 's/$2y/$2a/'
-      argocdServerAdminPassword: '$2a$10$sm34sqUIitMkm3ZCYcYVGOe.GU3amHit2gzH355JJR9U3bisN4SwC'  # nosemgrep
-
-  applicationSet:
-    enabled: false
+      # Disable authentication
+      server.disable.auth: true
 
   controller:
-    replicas: 1
     metrics:
       enabled: true
       serviceMonitor:
@@ -87,7 +82,6 @@ argo-cd:
     enabled: false
 
   repoServer:
-    replicas: 1
     metrics:
       enabled: true
       serviceMonitor:
@@ -132,7 +126,6 @@ argo-cd:
     #     emptyDir: {}
 
   server:
-    replicas: 1
     metrics:
       enabled: true
       serviceMonitor:

@@ -10,10 +10,17 @@ metadata:
 spec:
   project: default
   source:
-    path: charts/cilium
+    path: manifests/cilium
     repoURL: https://github.com/yellowhat/argocd
     # repoURL: https://gitlab.com/yellowhat/mule.git
-    targetRevision: main
+    targetRevision: HEAD
+    directory:
+      recurse: true
+
+    # path: charts/cilium
+    # repoURL: https://github.com/yellowhat/argocd
+    # # repoURL: https://gitlab.com/yellowhat/mule.git
+    # targetRevision: main
   destination:
     namespace: kube-system
     server: https://kubernetes.default.svc
