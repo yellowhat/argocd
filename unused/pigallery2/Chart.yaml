@@ -1,0 +1,17 @@
+---
+apiVersion: v2
+name: pigallery2
+description: pigallery2 helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/pigallery2
+type: application
+version: 1.1.2
+# renovate: dockerRepo=bpatrik/pigallery2
+appVersion: 2.0.0
+icon: https://bpatrik.github.io/pigallery2/assets/icon_inv.png
+sources:
+  - http://bpatrik.github.io/pigallery2
+  - https://github.com/bpatrik/pigallery2
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/pigallery2
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

@@ -1,0 +1,42 @@
+{{- if .Values.metrics.enabled }}
+{{- with .Values.metrics.serviceMonitor }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "immich.fullname" $ }}
+  labels:
+    {{- include "immich.labels" $ | nindent 4 }}
+    {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "immich.selectorLabels" $ | nindent 6 }}
+  endpoints:
+    - port: metrics-api
+      path: /metrics
+      interval: {{ .interval }}
+      scrapeTimeout: {{ .scrapeTimeout }}
+    - port: metrics-ms
+      path: /metrics
+      interval: {{ .interval }}
+      scrapeTimeout: {{ .scrapeTimeout }}
+  {{- with .jobLabel }}
+  jobLabel: {{ . }}
+  {{- end }}
+  {{- with .targetLabels }}
+  targetLabels:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end}}
+  {{- with .podTargetLabels }}
+  podTargetLabels:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end}}
+{{- end }}
+{{- end }}

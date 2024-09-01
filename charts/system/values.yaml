@@ -1,0 +1,175 @@
+---
+sealed-secrets:
+  keyrenewperiod: "0"  # deactivate automatic key renewal
+  resources:
+    requests:
+      cpu: 150m
+      memory: 256Mi
+    limits:
+      # cpu: 150m
+      memory: 256Mi
+
+kube-prometheus-stack:
+  alertmanager:
+    enabled: true
+  grafana:
+    additionalDataSources:
+      - name: loki
+        type: loki
+        url: http://system-loki:3100
+        orgId: 1
+        version: 1
+        jsonData:
+          timeout: 600
+    grafana.ini:
+      analytics:
+        reporting_enabled: false
+        check_for_updates: false
+        check_for_plugin_updates: false
+      # Disable authentication
+      auth.anonymous:
+        enabled: true
+        org_role: Admin
+      panels:
+        # Allow script tags in text panels for blocky
+        disable_sanitize_html: true
+    sidecar:
+      dashboards:
+        enabled: true
+        logLevel: WARN
+        label: grafana_dashboard
+        folderAnnotation: grafana_dashboard_folder
+        provider:
+          foldersFromFilesStructure: true
+        searchNamespace: ALL
+    ingress:
+      enabled: true
+      ingressClassName: cilium
+      annotations:
+        kubernetes.io/tls-acme: "true"
+      hosts:
+        - grafana.mukka.haus
+      tls:
+        - secretName: grafana-tls
+          hosts:
+            - grafana.mukka.haus
+
+  prometheus:
+    prometheusSpec:
+      additionalScrapeConfigs:
+        - job_name: tasmota
+          metrics_path: /metrics
+          static_configs:
+            - targets:
+                - 192.168.0.100
+                - 192.168.0.101
+                - 192.168.0.102
+                - 192.168.0.103
+                - 192.168.0.104
+                - 192.168.0.105
+      # Do not require labels to scrape serviceMonitor
+      serviceMonitorSelectorNilUsesHelmValues: false
+      # Do not require labels to load PrometheusRule
+      ruleSelectorNilUsesHelmValues: false
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: prometheus
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Gi
+      retention: 1y
+      retentionSize: 100GB
+      securityContext:
+        # securityContext is only applied to the initContainer, by the Prometheus Operator, not to the pod.
+        # Using root for now
+        # https://github.com/prometheus-operator/prometheus-operator/issues/6361
+        # https://github.com/prometheus-operator/prometheus-operator/pull/6469
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+        # runAsNonRoot: true
+        # runAsUser: 65534
+        # runAsGroup: 65534
+        # fsGroup: 65534
+        # fsGroupChangePolicy: OnRootMismatch
+
+loki:
+  loki:
+    analytics:
+      reporting_enabled: false
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    schemaConfig:
+      configs:
+        - from: 2024-04-01
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+    limits_config:
+      retention_period: 7d
+      max_query_series: 10000
+      max_query_parallelism: 4
+    rulerConfig:
+      alertmanager_url: http://system-kube-prometheus-sta-alertmanager:9093
+    server:
+      log_level: warn
+    storage:
+      type: filesystem
+  # https://github.com/grafana/loki/blob/main/production/helm/loki/single-binary-values.yaml
+  deploymentMode: SingleBinary
+  singleBinary:
+    replicas: 1
+    persistence:
+      storageClass: loki
+      size: 20Gi
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  ingester:
+    replicas: 0
+  querier:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  queryScheduler:
+    replicas: 0
+  distributor:
+    replicas: 0
+  compactor:
+    replicas: 0
+  indexGateway:
+    replicas: 0
+  bloomCompactor:
+    replicas: 0
+  bloomGateway:
+    replicas: 0
+  # Disable not necessary
+  gateway:
+    enabled: false
+  chunksCache:
+    enabled: false
+  resultsCache:
+    enabled: false
+
+promtail:
+  config:
+    logLevel: warn
+    clients:
+      - url: http://system-loki:3100/loki/api/v1/push
+  # Required for SELinux
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: required for SELinux
+  containerSecurityContext:
+    privileged: true
+    allowPrivilegeEscalation: true

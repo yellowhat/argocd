@@ -1,0 +1,147 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+
+# -- Replaces the generated name
+fullnameOverride: ""
+
+# -- Number of replicas
+replicaCount: 1
+
+# -- Update strategy
+updateStrategy: {}
+
+image:
+  # -- Repository to pull the image from
+  repository: docker.io/bpatrik/pigallery2
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: Always
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 100
+  fsGroup: 100
+  fsGroupChangePolicy: OnRootMismatch
+
+# -- Privileges and access control settings for a container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraEnvVars: {}
+# NODE_ENV: production
+
+# -- Extra volume definition
+extraVolumes: []
+
+# -- Extra volume mount definition
+extraVolumeMounts: []
+
+service:
+  labels: {}
+  annotations: {}
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  ingressClassName: ""
+  annotations: {}
+  hosts: []
+  # - host: example.local
+  #   paths:
+  #     - path: /
+  #       pathType: ImplementationSpecific
+  tls: []
+  # - secretName: example-tls
+  #   hosts:
+  #     - example.local
+
+persistence:
+  config:
+    # -- Enable/disable
+    enabled: false
+    # -- Mount Path
+    mountPath: /app/data/config
+    # -- Mount as read-only
+    readOnly: false
+    # -- Annotations
+    annotations: {}
+    # -- Storage class
+    # storageClassName: ""
+    # subPath: some-subpath
+    # -- Access Modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size
+    size: 1Gi
+  db:
+    # -- Enable/disable
+    enabled: false
+    # -- Mount Path
+    mountPath: /app/data/db
+    # -- Mount as read-only
+    readOnly: false
+    # -- Annotations
+    annotations: {}
+    # -- Storage class
+    # storageClassName: ""
+    # subPath: some-subpath
+    # -- Access Modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size
+    size: 10Gi
+  images:
+    # -- Enable/disable
+    enabled: false
+    # -- Mount Path
+    mountPath: /app/data/images
+    # -- Mount as read-only
+    readOnly: false
+    # -- Annotations
+    annotations: {}
+    # -- Storage class
+    # storageClassName: ""
+    # subPath: some-subpath
+    # -- Access Modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size
+    size: 10Gi
+
+# -- Extra manifests to deploy as an array
+extraManifests: []
+# - apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#   labels:
+#     name: extra
+#   data:
+#     extra-data: "value"

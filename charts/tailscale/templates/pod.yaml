@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "tailscale.fullname" . }}
+  annotations:
+    ignore-check.kube-linter.io/env-var-secret: "TS_KUBE_SECRET is just the secret name"
+    ignore-check.kube-linter.io/read-secret-from-env-var: "How the app works"
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}
+spec:
+  serviceAccountName: {{ include "tailscale.fullname" . }}
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  securityContext:
+    {{- toYaml .Values.podSecurityContext | nindent 8 }}
+  containers:
+    - name: {{ .Chart.Name }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      env:
+        # k8s secret name where to store the state
+        - name: TS_KUBE_SECRET
+          value: {{ .Values.stateSecretName | quote }}
+        {{- range $key, $value := .Values.extraEnvVars }}
+        - name: {{ $key | quote }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- range $key, $value := .Values.extraEnvVarsSecret }}
+        - name: {{ $key | quote }}
+          valueFrom:
+            secretKeyRef:
+              key: {{ $value.key | quote }}
+              name: {{ $value.name | quote }}
+        {{- end }}
+      startupProbe:
+        exec:
+          command:
+          - test
+          - -S
+          - /tmp/tailscaled.sock
+        periodSeconds: 1
+        failureThreshold: 60
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -S
+          - /tmp/tailscaled.sock
+        # Default period (10s) causes too much load
+        periodSeconds: 60
+      livenessProbe:
+        exec:
+          command:
+          - test
+          - -S
+          - /tmp/tailscaled.sock
+        # Default period (10s) causes too much load
+        periodSeconds: 60
+      volumeMounts:
+        {{- with .Values.extraVolumeMounts }}
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+      resources:
+        {{- toYaml .Values.resources | nindent 12 }}
+  volumes:
+    {{- with .Values.extraVolumes }}
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}

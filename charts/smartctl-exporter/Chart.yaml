@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: smartctl-exporter
+description: Export smartctl statistics to prometheus
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/smartctl-exporter
+type: application
+version: 1.0.15
+appVersion: 0.10.0
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://github.com/prometheus-community/smartctl_exporter
+  - https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-smartctl-exporter
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/smartctl-exporter
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: prometheus-smartctl-exporter
+    version: 0.10.0
+    repository: https://prometheus-community.github.io/helm-charts

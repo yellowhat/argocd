@@ -1,0 +1,146 @@
+---
+# Source: immich/templates/server/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: immich
+  labels:
+    helm.sh/chart: immich-1.0.0
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/version: "v1.113.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: Required for GPU transcoding
+    ignore-check.kube-linter.io/privilege-escalation-container: Required to write transcoding
+    ignore-check.kube-linter.io/privileged-container: Required to write transcoding
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: immich
+      app.kubernetes.io/instance: immich
+  serviceName: immich
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: d6094c6a7a1e9350bf69eadff80d01980718b2988cad777f0e7af5ec84ee61af
+      labels:
+        app.kubernetes.io/name: immich
+        app.kubernetes.io/instance: immich
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 100
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: immich
+          image: "ghcr.io/immich-app/immich-server:v1.113.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              drop:
+              - ALL
+            privileged: true
+            readOnlyRootFilesystem: true
+          env:
+            - name: IMMICH_PORT
+              value: "3001"
+            - name: IMMICH_METRICS
+              value: "true"
+            - name: IMMICH_CONFIG_FILE
+              value: /etc/immich.yaml
+            - name: "REDIS_HOSTNAME"
+              value: "immich-valkey-master.immich.svc"
+            - name: "DB_DATABASE_NAME"
+              valueFrom:
+                secretKeyRef:
+                  key: "database"
+                  name: "immich-postgresql-svcbind-postgres"
+            - name: "DB_HOSTNAME"
+              valueFrom:
+                secretKeyRef:
+                  key: "host"
+                  name: "immich-postgresql-svcbind-postgres"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  key: "password"
+                  name: "immich-postgresql-svcbind-postgres"
+            - name: "DB_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  key: "username"
+                  name: "immich-postgresql-svcbind-postgres"
+          ports:
+            - name: http
+              containerPort: 3001
+              protocol: TCP
+            - name: metrics-api
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics-ms
+              containerPort: 8082
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+            periodSeconds: 1
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+          volumeMounts:
+            - name: config
+              mountPath: /etc/immich.yaml
+              subPath: immich-config.yaml
+            - name: cache
+              mountPath: /usr/src/app/upload
+              readOnly: false
+            - name: photo
+              mountPath: /usr/src/app/import
+              readOnly: true
+            - mountPath: /dev/dri
+              name: dri
+      volumes:
+        - name: config
+          configMap:
+            name: immich-config
+        - hostPath:
+            path: /dev/dri
+          name: dri
+  volumeClaimTemplates:
+    - metadata:
+        name: cache
+        labels:
+          app.kubernetes.io/name: immich
+          app.kubernetes.io/instance: immich
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "immich-cache"
+        resources:
+          requests:
+            storage: "1Gi"
+    - metadata:
+        name: photo
+        labels:
+          app.kubernetes.io/name: immich
+          app.kubernetes.io/instance: immich
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "immich-photo"
+        resources:
+          requests:
+            storage: "1Gi"

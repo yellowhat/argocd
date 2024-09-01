@@ -1,0 +1,14 @@
+---
+{{ if .Values.blacklist }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pihole.fullname" . }}-blacklist
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+data:
+  blacklist.txt: |
+  {{- range .Values.blacklist }}
+    {{ . }}
+  {{- end }}
+{{ end }}

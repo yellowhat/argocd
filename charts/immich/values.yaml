@@ -1,0 +1,202 @@
+---
+valkey:
+  architecture: standalone
+  auth:
+    enabled: false
+  networkPolicy:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+
+postgresql:
+  architecture: standalone
+  auth:
+    database: immich
+    # Immich requires the superuser as it has to enable extensions
+    postgresPassword: passw0rd
+  serviceBindings:
+    enabled: true
+  image:
+    registry: ghcr.io
+    repository: yellowhat/registry/pgvecto-rs
+    tag: 16.4.0-debian-12-r4
+  primary:
+    resourcesPreset: none
+    networkPolicy:
+      enabled: false
+    pdb:
+      create: false
+    initdb:
+      args: "--data-checksums"
+      scripts:
+        create-extensions.sql: |
+          CREATE EXTENSION cube;
+          CREATE EXTENSION earthdistance;
+          CREATE EXTENSION vectors;
+          enabled: false
+    persistence:
+      enabled: true
+      size: 1Gi
+
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+
+# -- Replaces the generated name
+fullnameOverride: ""
+
+server:
+  # -- Number of replicas
+  replicaCount: 1
+
+  # -- Update strategy
+  updateStrategy: {}
+
+  image:
+    # -- Repository to pull the image from
+    repository: ghcr.io/immich-app/immich-server
+    # -- Image tag, if empty it will get it from the chart's appVersion
+    tag: ""
+    # -- Pull policy
+    pullPolicy: IfNotPresent
+
+  # -- Secret name for pulling images from private repository
+  imagePullSecrets: []
+
+  # -- Additional statefulset annotations
+  annotations: {}
+
+  # -- Additional pod annotations
+  podAnnotations: {}
+
+  # -- Privileges and access control settings for a Pod (all containers in a pod)
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 100
+    fsGroup: 100
+    fsGroupChangePolicy: OnRootMismatch
+
+  # -- Privileges and access control settings for a container
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+
+  # -- Node selection constraint
+  nodeSelector: {}
+
+  # -- Toleration for taints
+  tolerations: []
+
+  # -- Affinity rules
+  affinity: {}
+
+  # -- CPU/MEM resources
+  resources: {}
+
+  # -- Extra volume definition
+  extraEnvVars: {}
+
+  # -- Extra environment variables from secrets
+  extraEnvVarsSecret: {}
+  # env_var:
+  #   name: secret-name
+  #   key: secret-key
+
+  # -- Extra volume definition
+  extraVolumes: []
+  # - name: dri
+  #   hostPath:
+  #     path: /dev/dri
+
+  # -- Extra volume mount definition
+  extraVolumeMounts: []
+  # - name: dri
+  #   mountPath: /dev/dri
+
+  service:
+    labels: {}
+    annotations: {}
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    enabled: false
+    ingressClassName: ""
+    annotations: {}
+    hosts: []
+    # - host: example.local
+    #   paths:
+    #     - path: /
+    #       pathType: ImplementationSpecific
+    tls: []
+    # - secretName: example-tls
+    #   hosts:
+    #     - example.local
+
+  persistence:
+    cache:
+      # -- Enable/disable
+      enabled: false
+      # -- Mount Path
+      mountPath: /usr/src/app/upload
+      # -- Mount as read-only
+      readOnly: false
+      # -- Annotations
+      annotations: {}
+      # -- Storage class
+      # storageClassName: ""
+      # subPath: some-subpath
+      # -- Access Modes
+      accessModes:
+        - ReadWriteOnce
+      # -- Size
+      size: 1Gi
+    photo:
+      # -- Enable/disable
+      enabled: false
+      # -- Mount Path
+      mountPath: /usr/src/app/import
+      # -- Mount as read-only
+      readOnly: false
+      # -- Annotations
+      annotations: {}
+      # -- Storage class
+      # storageClassName: ""
+      # subPath: some-subpath
+      # -- Access Modes
+      accessModes:
+        - ReadWriteOnce
+      # -- Size
+      size: 1Gi
+
+# -- Enable metrics
+metrics:
+  enabled: false
+  # -- Create and configure serviceMonitor
+  serviceMonitor:
+    # -- Additional labels
+    labels: {}
+    # -- Interval at which Prometheus should scrape metrics
+    interval: 30s
+    # -- Timeout after which the scrape is ended
+    scrapeTimeout: 10s
+    # -- The Kubernetes `Endpoints` label to use as the Prometheus job name
+    jobLabel: ""
+    # -- TargetLabels transfers labels from the Kubernetes `Service`` onto the created metrics.
+    targetLabels: []
+    # -- PodTargetLabels transfers labels on the Kubernetes `Pod`` onto the created metrics.
+    podTargetLabels: []
+
+# -- Extra manifests to deploy as an array
+extraManifests: []
+# - apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#   labels:
+#     name: extra
+#   data:
+#     extra-data: "value"

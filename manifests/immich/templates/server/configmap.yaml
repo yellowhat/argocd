@@ -1,0 +1,28 @@
+---
+# Source: immich/templates/server/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-config
+  labels:
+    helm.sh/chart: immich-1.0.0
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/version: "v1.113.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  immich-config.yaml: |
+    ---
+    newVersionCheck:
+      enabled: false
+    
+    trash:
+      enabled: false
+    
+    machineLearning:
+      enabled: false
+    
+    ffmpeg:
+      accelDecode: true
+      accel: qsv  # Intel >7th gen
+      preferredHwDevice: auto

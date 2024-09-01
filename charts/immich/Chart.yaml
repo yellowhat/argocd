@@ -1,0 +1,23 @@
+---
+apiVersion: v2
+name: immich
+description: Install immich
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/immich
+type: application
+version: 1.0.0
+# renovate: dockerRepo=ghcr.io/immich-app/immich-server
+appVersion: v1.113.0
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://github.com/bitnami/charts/blob/main/bitnami/valkey
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/immich
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: valkey
+    version: 0.3.15
+    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: postgresql
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 15.5.27

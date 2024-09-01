@@ -1,0 +1,17 @@
+---
+apiVersion: v2
+name: jellyfin
+description: jellyfin helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/jellyfin
+type: application
+version: 1.6.11
+# renovate: dockerRepo=jellyfin/jellyfin
+appVersion: 10.9.10
+icon: https://jellyfin.org/images/banner-dark.svg
+sources:
+  - https://jellyfin.org
+  - https://github.com/brianmcarey/jellyfin-helm
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/jellyfin
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

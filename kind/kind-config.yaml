@@ -1,0 +1,22 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+featureGates:
+  # Fix: `Failed to create an oomWatcher`
+  KubeletInUserNamespace: true
+networking:
+  disableDefaultCNI: true  # Do not install kindnet for cilium
+  kubeProxyMode: none      # Do not install kube-proxy for cilium
+  apiServerAddress: 127.0.0.1
+  apiServerPort: 6443
+  # Avoid overlapping CIDR with the k8s cluster
+  podSubnet: "172.16.0.0/24"
+  serviceSubnet: "172.16.100.0/24"
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # Allow to debug ArgoCD
+      - containerPort: 30080
+        hostPort: 30080
+    labels:
+      disk: local

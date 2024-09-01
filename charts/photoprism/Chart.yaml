@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: photoprism
+description: Photoprism for kubernetes
+home: https://gitlab.com/Yellowhat/mule/-/tree/main/charts/photoprism
+type: application
+version: 1.0.0
+appVersion: 221118-jammy
+sources:
+  - https://github.com/photoprism/photoprism
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

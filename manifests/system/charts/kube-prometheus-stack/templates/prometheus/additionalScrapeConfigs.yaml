@@ -1,0 +1,19 @@
+---
+# Source: system/charts/kube-prometheus-stack/templates/prometheus/additionalScrapeConfigs.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: system-kube-prometheus-sta-prometheus-scrape-confg
+  namespace: system
+  labels:
+    app: kube-prometheus-stack-prometheus-scrape-confg
+    
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/version: "61.9.0"
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    chart: kube-prometheus-stack-61.9.0
+    release: "system"
+    heritage: "Helm"
+data:
+  additional-scrape-configs.yaml: "LSBqb2JfbmFtZTogdGFzbW90YQogIG1ldHJpY3NfcGF0aDogL21ldHJpY3MKICBzdGF0aWNfY29uZmlnczoKICAtIHRhcmdldHM6CiAgICAtIDE5Mi4xNjguMC4xMDAKICAgIC0gMTkyLjE2OC4wLjEwMQogICAgLSAxOTIuMTY4LjAuMTAyCiAgICAtIDE5Mi4xNjguMC4xMDMKICAgIC0gMTkyLjE2OC4wLjEwNAogICAgLSAxOTIuMTY4LjAuMTA1"

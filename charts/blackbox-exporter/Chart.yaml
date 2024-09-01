@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: blackbox-exporter
+description: blackbox exporter helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/blackbox
+type: application
+version: 1.2.4
+appVersion: 8.17.0
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://github.com/prometheus/blackbox_exporter
+  - https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/blackbox
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: prometheus-blackbox-exporter
+    version: 8.17.0
+    repository: https://prometheus-community.github.io/helm-charts

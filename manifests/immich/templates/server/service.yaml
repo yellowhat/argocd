@@ -1,0 +1,30 @@
+---
+# Source: immich/templates/server/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich
+  labels:
+    helm.sh/chart: immich-1.0.0
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/version: "v1.113.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+    - name: metrics-api
+      port: 8081
+      targetPort: metrics-api
+      protocol: TCP
+    - name: metrics-ms
+      port: 8082
+      targetPort: metrics-ms
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: immich

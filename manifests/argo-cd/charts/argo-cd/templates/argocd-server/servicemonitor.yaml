@@ -1,0 +1,28 @@
+---
+# Source: argo-cd/charts/argo-cd/templates/argocd-server/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argo-cd-server
+  namespace: "argo-cd"
+  labels:
+    helm.sh/chart: argo-cd-7.4.1
+    app.kubernetes.io/name: argo-cd-server
+    app.kubernetes.io/instance: argo-cd
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/version: "v2.12.0"
+spec:
+  endpoints:
+    - port: http-metrics
+      interval: 30s
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - argo-cd
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argo-cd-server-metrics
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/component: server

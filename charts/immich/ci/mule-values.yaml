@@ -1,0 +1,184 @@
+---
+postgresql:
+  primary:
+    persistence:
+      storageClass: immich-db
+
+server:
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: Required for GPU transcoding
+    ignore-check.kube-linter.io/privileged-container: Required to write transcoding
+    ignore-check.kube-linter.io/privilege-escalation-container: Required to write transcoding
+
+  extraEnvVars:
+    REDIS_HOSTNAME: immich-valkey-master.immich.svc
+
+  extraEnvVarsSecret:
+    # Immich requires the superuser as it has to enable extensions
+    DB_HOSTNAME:
+      name: immich-postgresql-svcbind-postgres
+      key: host
+    DB_USERNAME:
+      name: immich-postgresql-svcbind-postgres
+      key: username
+    DB_PASSWORD:
+      name: immich-postgresql-svcbind-postgres
+      key: password
+    DB_DATABASE_NAME:
+      name: immich-postgresql-svcbind-postgres
+      key: database
+
+  # GPU transcoding
+  securityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
+  extraVolumes:
+    - name: dri
+      hostPath:
+        path: /dev/dri
+  extraVolumeMounts:
+    - name: dri
+      mountPath: /dev/dri
+
+  ingress:
+    enabled: true
+    ingressClassName: cilium
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: photo.mukka.haus
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: immich-tls
+        hosts:
+          - photo.mukka.haus
+
+  persistence:
+    cache:
+      enabled: true
+      storageClassName: immich-cache
+    photo:
+      enabled: true
+      storageClassName: immich-photo
+      readOnly: true
+
+metrics:
+  enabled: true
+
+extraManifests:
+  - apiVersion: cilium.io/v2
+    kind: CiliumNetworkPolicy
+    metadata:
+      name: restrict
+    spec:
+      # Apply to all pods in namespacee
+      endpointSelector: {}
+      # Allow ingress from anywhere
+      egress:
+        # Allow to resolve DNS
+        - toEndpoints:
+            - matchLabels:
+                io.kubernetes.pod.namespace: kube-system
+                k8s-app: kube-dns
+          toPorts:
+            - ports:
+                - port: "53"
+                  protocol: UDP
+              rules:
+                dns:
+                  - matchPattern: "*"
+        # Allow egress to all pods in namespace
+        - toEndpoints:
+            - {}
+
+  - kind: StorageClass
+    apiVersion: storage.k8s.io/v1
+    metadata:
+      name: immich-cache
+    provisioner: kubernetes.io/no-provisioner
+    volumeBindingMode: WaitForFirstConsumer
+
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: immich-cache
+      labels:
+        type: local
+    spec:
+      storageClassName: immich-cache
+      capacity:
+        storage: 1Gi
+      accessModes:
+        - ReadWriteOnce
+      local:
+        path: /data/immich-cache
+      nodeAffinity:
+        required:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: disk
+                  operator: In
+                  values:
+                    - local
+
+  - kind: StorageClass
+    apiVersion: storage.k8s.io/v1
+    metadata:
+      name: immich-db
+    provisioner: kubernetes.io/no-provisioner
+    volumeBindingMode: WaitForFirstConsumer
+
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: immich-db
+      labels:
+        type: local
+    spec:
+      storageClassName: immich-db
+      capacity:
+        storage: 1Gi
+      accessModes:
+        - ReadWriteOnce
+      local:
+        path: /data/immich-db
+      nodeAffinity:
+        required:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: disk
+                  operator: In
+                  values:
+                    - local
+
+  - apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: immich-photo
+    provisioner: kubernetes.io/no-provisioner
+    volumeBindingMode: WaitForFirstConsumer
+
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: immich-photo
+      labels:
+        type: local
+    spec:
+      storageClassName: immich-photo
+      capacity:
+        storage: 1Gi
+      accessModes:
+        - ReadWriteOnce
+      local:
+        path: /data/photo
+      nodeAffinity:
+        required:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: disk
+                  operator: In
+                  values:
+                    - local

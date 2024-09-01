@@ -1,0 +1,17 @@
+---
+apiVersion: v2
+name: tailscale
+description: tailscale helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/tailscale
+type: application
+version: 1.0.8
+# renovate: dockerRepo=ghcr.io/tailscale/tailscale
+appVersion: v1.72.0
+icon: https://jellyfin.org/images/banner-dark.svg
+sources:
+  - https://tailscale.com
+  - https://github.com/tailscale/tailscale
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/tailscale
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

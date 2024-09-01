@@ -1,0 +1,24 @@
+---
+# Source: immich/charts/valkey/templates/headless-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-valkey-headless
+  namespace: "immich"
+  labels:
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: valkey
+    app.kubernetes.io/version: 7.2.6
+    helm.sh/chart: valkey-0.3.15
+    app.kubernetes.io/part-of: valkey
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: tcp-redis
+      port:  6379
+      targetPort: redis
+  selector:
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/name: valkey

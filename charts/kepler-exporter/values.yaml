@@ -1,0 +1,19 @@
+---
+kepler:
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: Required host root access
+
+  # /usr/src is not available in NixOS
+  canMount:
+    usrSrc: false
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      # cpu: 1000m
+      memory: 200Mi
+
+  serviceMonitor:
+    enabled: true

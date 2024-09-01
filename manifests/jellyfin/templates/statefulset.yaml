@@ -1,0 +1,105 @@
+---
+# Source: jellyfin/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jellyfin
+  labels:
+    helm.sh/chart: jellyfin-1.6.11
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/version: "10.9.10"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    datree.skip/CONTAINERS_INCORRECT_PRIVILEGED_VALUE_TRUE: Required for GPU transcoding
+    ignore-check.kube-linter.io/no-read-only-root-fs: Required to write transcoding
+    ignore-check.kube-linter.io/privilege-escalation-container: Required to write transcoding
+    ignore-check.kube-linter.io/privileged-container: Required to write transcoding
+    ignore-check.kube-linter.io/writable-host-mount: Required to write config
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jellyfin
+      app.kubernetes.io/instance: jellyfin
+  serviceName: jellyfin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: jellyfin
+        app.kubernetes.io/instance: jellyfin
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 100
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: jellyfin
+          image: "docker.io/jellyfin/jellyfin:10.9.10"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              drop:
+              - ALL
+            privileged: true
+            readOnlyRootFilesystem: false
+          ports:
+            - name: http
+              containerPort: 8096
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              port: http
+              path: /health
+            periodSeconds: 1
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /health
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /health
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: false
+            - name: media
+              mountPath: /media
+              readOnly: false
+            - mountPath: /dev/dri
+              name: dri
+      volumes:
+        - hostPath:
+            path: /dev/dri
+          name: dri
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+        labels:
+          app.kubernetes.io/name: jellyfin
+          app.kubernetes.io/instance: jellyfin
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "jellyfin-config"
+        resources:
+          requests:
+            storage: "1Gi"
+    - metadata:
+        name: media
+        labels:
+          app.kubernetes.io/name: jellyfin
+          app.kubernetes.io/instance: jellyfin
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "jellyfin-media"
+        resources:
+          requests:
+            storage: "100Gi"

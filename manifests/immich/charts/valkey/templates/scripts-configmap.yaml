@@ -1,0 +1,30 @@
+---
+# Source: immich/charts/valkey/templates/scripts-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-valkey-scripts
+  namespace: "immich"
+  labels:
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: valkey
+    app.kubernetes.io/version: 7.2.6
+    helm.sh/chart: valkey-0.3.15
+    app.kubernetes.io/part-of: valkey
+data:
+  start-master.sh: |
+    #!/bin/bash
+
+    [[ -f $VALKEY_PASSWORD_FILE ]] && export VALKEY_PASSWORD="$(< "${VALKEY_PASSWORD_FILE}")"
+    if [[ -f /opt/bitnami/valkey/mounted-etc/master.conf ]];then
+        cp /opt/bitnami/valkey/mounted-etc/master.conf /opt/bitnami/valkey/etc/master.conf
+    fi
+    if [[ -f /opt/bitnami/valkey/mounted-etc/valkey.conf ]];then
+        cp /opt/bitnami/valkey/mounted-etc/valkey.conf /opt/bitnami/valkey/etc/valkey.conf
+    fi
+    ARGS=("--port" "${VALKEY_PORT}")
+    ARGS+=("--protected-mode" "no")
+    ARGS+=("--include" "/opt/bitnami/valkey/etc/valkey.conf")
+    ARGS+=("--include" "/opt/bitnami/valkey/etc/master.conf")
+    exec valkey-server "${ARGS[@]}"

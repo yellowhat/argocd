@@ -1,0 +1,118 @@
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: immich-cache
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: immich-db
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: immich-photo
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: immich-cache
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  local:
+    path: /data/immich-cache
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: disk
+          operator: In
+          values:
+          - local
+  storageClassName: immich-cache
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: immich-db
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  local:
+    path: /data/immich-db
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: disk
+          operator: In
+          values:
+          - local
+  storageClassName: immich-db
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: immich-photo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  local:
+    path: /data/photo
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: disk
+          operator: In
+          values:
+          - local
+  storageClassName: immich-photo
+---
+# Source: immich/templates/extra-manifests.yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: restrict
+spec:
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+        k8s-app: kube-dns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      rules:
+        dns:
+        - matchPattern: '*'
+  - toEndpoints:
+    - {}
+  endpointSelector: {}

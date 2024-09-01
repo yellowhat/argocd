@@ -1,0 +1,14 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "tailscale.fullname" . }}
+  annotations:
+    ignore-check.kube-linter.io/access-to-secrets: "How the app works"
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "tailscale.fullname" . }}
+roleRef:
+  kind: Role
+  name: {{ include "tailscale.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

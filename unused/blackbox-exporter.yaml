@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blackbox-exporter
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    # Use foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    path: manifests/blackbox-exporter
+    repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    namespace: blackbox-exporter
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false  # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true

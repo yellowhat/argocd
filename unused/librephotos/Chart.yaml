@@ -1,0 +1,24 @@
+---
+apiVersion: v2
+name: librephotos
+description: LibrePhotos for kubernetes
+home: https://gitlab.com/Yellowhat/mule/-/tree/main/charts/librephotos
+type: application
+version: "2024.28"
+appVersion: "2024w28"
+sources:
+  - https://github.com/LibrePhotos/librephotos
+  - https://github.com/k8sonlab/publiccharts
+  - https://hub.docker.com/r/reallibrephotos
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: postgresql
+    version: 12.1.9
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: 17.4.3
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
