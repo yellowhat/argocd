@@ -1,0 +1,65 @@
+---
+# Source: system/charts/sealed-secrets/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: system-sealed-secrets-key-admin
+  namespace: system
+  labels:
+    app.kubernetes.io/name: sealed-secrets
+    helm.sh/chart: sealed-secrets-2.16.1
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 0.27.1
+    app.kubernetes.io/part-of: sealed-secrets
+  annotations:
+rules:
+  - apiGroups:
+      - ""
+    resourceNames:
+      - sealed-secrets-key
+    resources:
+      - secrets
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - create
+      - list
+---
+# Source: system/charts/sealed-secrets/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: system-sealed-secrets-service-proxier
+  namespace: system
+  labels:
+    app.kubernetes.io/name: sealed-secrets
+    helm.sh/chart: sealed-secrets-2.16.1
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 0.27.1
+    app.kubernetes.io/part-of: sealed-secrets
+rules:
+  - apiGroups:
+      - ""
+    resourceNames:
+      - system-sealed-secrets
+    resources:
+      - services
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resourceNames:
+      - 'http:system-sealed-secrets:'
+      - 'http:system-sealed-secrets:http'
+      - system-sealed-secrets
+    resources:
+      - services/proxy
+    verbs:
+      - create
+      - get

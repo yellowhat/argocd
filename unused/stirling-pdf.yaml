@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stirling-pdf
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    # Use foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    path: manifests/stirling-pdf
+    repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    namespace: stirling-pdf
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false  # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true

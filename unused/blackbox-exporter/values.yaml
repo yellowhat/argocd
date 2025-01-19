@@ -1,0 +1,43 @@
+---
+prometheus-blackbox-exporter:
+  image:
+    pullPolicy: Always
+
+  config:
+    modules:
+      http:
+        prober: http
+        timeout: 5s
+        http:
+          method: GET
+          valid_http_versions:
+            - "HTTP/1.1"
+            - "HTTP/2.0"
+          follow_redirects: true
+          preferred_ip_protocol: ip4
+          fail_if_ssl: false
+          fail_if_not_ssl: false
+
+  serviceMonitor:
+    enabled: true
+    selfMonitor:
+      enabled: true
+    defaults:
+      interval: 120s
+      scrapeTimeout: 10s
+    targets:
+      - name: gitlab
+        url: https://gitlab.com
+        module: http
+      - name: github
+        url: https://github.com
+        module: http
+      - name: google
+        url: https://google.com
+        module: http
+      - name: grafana
+        url: https://grafana.mukka.haus/login
+        module: http
+      - name: jellyfin
+        url: https://jellyfin.mukka.haus
+        module: http

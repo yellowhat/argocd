@@ -1,0 +1,17 @@
+---
+apiVersion: v2
+name: ebpf-exporter
+description: ebpf_exporter helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/ebpf-exporter
+type: application
+version: 1.0.3
+# renovate: dockerRepo=ghcr.io/cloudflare/ebpf_exporter
+appVersion: v2.4.1
+icon: https://avatars.githubusercontent.com/u/314135?s=48&v=4
+sources:
+  - https://github.com/cloudflare/ebpf_exporter
+  - https://github.com/kubeservice-stack/kubservice-charts/tree/master/charts/kubeservice-ebpf-exporter
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/blocky
+maintainers:
+  - name: dongjiang
+    email: dongjiang1989@126.com

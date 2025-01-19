@@ -1,0 +1,1610 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "datasource",
+                    "uid": "grafana"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
+            }
+        ]
+    },
+    "description": "Metrics from Pi-Hole using https://gitlab.com/yellowhat-labs/pihole2influxdb",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 2,
+    "links": [],
+    "liveNow": true,
+    "panels": [
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 21,
+            "panels": [],
+            "title": "General",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [
+                        {
+                            "options": {
+                                "0": {
+                                    "color": "dark-red",
+                                    "index": 0,
+                                    "text": "Disabled"
+                                },
+                                "1": {
+                                    "color": "dark-green",
+                                    "index": 1,
+                                    "text": "Enabled"
+                                }
+                            },
+                            "type": "value"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "bool_on_off"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 0,
+                "y": 1
+            },
+            "id": 62,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["last"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"summary\" and r._field == \"status\")",
+                    "refId": "A"
+                }
+            ],
+            "title": "Status",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "locale"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 3,
+                "y": 1
+            },
+            "id": 63,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["last"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"summary\" and r._field == \"domains_being_blocked\")",
+                    "refId": "A"
+                }
+            ],
+            "title": "Domains on Adlists",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "yellow",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "s"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 6,
+                "y": 1
+            },
+            "id": 64,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["last"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "currentSeconds = (int(v: now()) / 1000000000)\n\nfrom(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"summary\" and r._field == \"gravity_last_updated\")\n  |> last()\n  |> map(fn: (r) => ({r with _value: currentSeconds - int(v: r._value)}))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Time since Gravity updated",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "green",
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "purple",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "locale"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 9,
+                "y": 1
+            },
+            "id": 2,
+            "interval": "10m",
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["sum"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\r\n  |> group(columns: [\"_start\"])\r\n  |> count()\r\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Total Queries",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "green",
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "super-light-red",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "locale"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 12,
+                "y": 1
+            },
+            "id": 39,
+            "interval": "10m",
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["sum"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.status == \"BLOCKED\")\r\n  |> group(columns: [\"_start\"])\r\n  |> count()\r\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Total BLOCKED",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "blue",
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "blue",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "locale"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 15,
+                "y": 1
+            },
+            "id": 65,
+            "interval": "10m",
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["sum"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\r\n  |> group(columns: [\"client\"])\r\n  |> count()\r\n  |> group()\r\n  |> count()",
+                    "refId": "A"
+                }
+            ],
+            "title": "Total Clients (interval)",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "blue",
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "super-light-blue",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "locale"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 3,
+                "x": 18,
+                "y": 1
+            },
+            "id": 29,
+            "interval": "10m",
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["sum"],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "import \"influxdata/influxdb/schema\"\r\n\r\nschema.tagValues(bucket: \"${bucket}\", tag: \"client\")\r\n  |> count()",
+                    "refId": "A"
+                }
+            ],
+            "title": "Total Clients",
+            "transparent": true,
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "fixed"
+                    },
+                    "custom": {
+                        "align": "left",
+                        "displayMode": "auto",
+                        "filterable": false,
+                        "inspect": false,
+                        "minWidth": 50
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Client"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 451
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 0,
+                "y": 5
+            },
+            "id": 27,
+            "options": {
+                "footer": {
+                    "enablePagination": false,
+                    "fields": [],
+                    "reducer": ["sum"],
+                    "show": true
+                },
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "desc": true,
+                        "displayName": "Frequency"
+                    }
+                ]
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"client\"])\n  |> count()\n  |> group()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Clients - all",
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": ["_value", "client"]
+                        }
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {},
+                        "indexByName": {
+                            "_value": 1,
+                            "client": 0
+                        },
+                        "renameByName": {
+                            "_value": "Frequency",
+                            "client": "Client"
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-reds"
+                    },
+                    "custom": {
+                        "align": "left",
+                        "displayMode": "auto",
+                        "filterable": false,
+                        "inspect": false,
+                        "minWidth": 50
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 5,
+                "x": 6,
+                "y": 5
+            },
+            "id": 36,
+            "options": {
+                "footer": {
+                    "enablePagination": false,
+                    "fields": [],
+                    "reducer": ["sum"],
+                    "show": true
+                },
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "desc": true,
+                        "displayName": "Frequency"
+                    }
+                ]
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.status == \"BLOCKED\")\n  |> group(columns: [\"client\"])\n  |> count()\n  |> group()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Clients - BLOCKED",
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": ["_value", "client"]
+                        }
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {},
+                        "indexByName": {
+                            "_value": 1,
+                            "client": 0
+                        },
+                        "renameByName": {
+                            "_value": "Frequency",
+                            "client": "Client"
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-reds"
+                    },
+                    "custom": {
+                        "align": "left",
+                        "displayMode": "auto",
+                        "filterable": false,
+                        "inspect": false,
+                        "minWidth": 50
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 11,
+                "y": 5
+            },
+            "id": 37,
+            "options": {
+                "footer": {
+                    "enablePagination": false,
+                    "fields": [],
+                    "reducer": ["sum"],
+                    "show": true
+                },
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "desc": true,
+                        "displayName": "Frequency"
+                    }
+                ]
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"domain\"])\n  |> count()\n  |> group()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Top Domains - all",
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": ["_value", "domain"]
+                        }
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {},
+                        "indexByName": {
+                            "_value": 1,
+                            "domain": 0
+                        },
+                        "renameByName": {
+                            "_value": "Frequency",
+                            "client": "Client",
+                            "domain": "Domain"
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-reds"
+                    },
+                    "custom": {
+                        "align": "left",
+                        "displayMode": "auto",
+                        "filterable": false,
+                        "inspect": false,
+                        "minWidth": 50
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 7,
+                "x": 17,
+                "y": 5
+            },
+            "id": 38,
+            "options": {
+                "footer": {
+                    "enablePagination": false,
+                    "fields": [],
+                    "reducer": ["sum"],
+                    "show": true
+                },
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "desc": true,
+                        "displayName": "Frequency"
+                    }
+                ]
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.status == \"BLOCKED\")\n  |> group(columns: [\"domain\"])\n  |> count()\n  |> group()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Top Domains - BLOCKED",
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": ["_value", "domain"]
+                        }
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {},
+                        "indexByName": {
+                            "_value": 1,
+                            "domain": 0
+                        },
+                        "renameByName": {
+                            "_value": "Frequency",
+                            "client": "Client",
+                            "domain": "Domain"
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 17
+            },
+            "id": 58,
+            "panels": [],
+            "title": "Activity",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 80,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineWidth": 1,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 12,
+                "x": 0,
+                "y": 18
+            },
+            "id": 54,
+            "options": {
+                "barRadius": 0,
+                "barWidth": 0.97,
+                "groupWidth": 0.7,
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "orientation": "vertical",
+                "showValue": "never",
+                "stacking": "normal",
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                },
+                "xField": "Time",
+                "xTickLabelRotation": 0,
+                "xTickLabelSpacing": 100
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"client\"])\n  |> aggregateWindow(every: 5m, fn: count)",
+                    "refId": "A"
+                }
+            ],
+            "title": "Activity - 5 min window - per client",
+            "type": "barchart"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 80,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineWidth": 1,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 12,
+                "x": 12,
+                "y": 18
+            },
+            "id": 55,
+            "options": {
+                "barRadius": 0,
+                "barWidth": 0.97,
+                "groupWidth": 0.7,
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "orientation": "auto",
+                "showValue": "never",
+                "stacking": "normal",
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                },
+                "xTickLabelRotation": 0,
+                "xTickLabelSpacing": 100
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"status\"])\n  |> aggregateWindow(every: 5m, fn: count)",
+                    "refId": "A"
+                }
+            ],
+            "title": "Activity - 5 min window - per status",
+            "type": "barchart"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 30
+            },
+            "id": 60,
+            "panels": [],
+            "title": "Pie",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "displayName": "${__field.labels.status}",
+                    "mappings": [],
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 0,
+                "y": 31
+            },
+            "id": 23,
+            "options": {
+                "displayLabels": ["percent"],
+                "legend": {
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true,
+                    "values": ["value", "percent"]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "/.*/",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "9.2.4",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"status\"])\n  |> count()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Status",
+            "type": "piechart"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "displayName": "${__field.labels.reply_type}",
+                    "mappings": [],
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 6,
+                "y": 31
+            },
+            "id": 24,
+            "options": {
+                "displayLabels": ["percent"],
+                "legend": {
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true,
+                    "values": ["value", "percent"]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "/.*/",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "9.2.4",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"reply_type\"])\n  |> count()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Reply Type",
+            "type": "piechart"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "displayName": "${__field.labels.query_type}",
+                    "mappings": [],
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 12,
+                "y": 31
+            },
+            "id": 25,
+            "options": {
+                "displayLabels": ["percent"],
+                "legend": {
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true,
+                    "values": ["value", "percent"]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "/.*/",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "9.2.4",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"query_type\"])\n  |> count()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Query Type",
+            "type": "piechart"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        }
+                    },
+                    "displayName": "${__field.labels.upstream}",
+                    "mappings": [],
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 6,
+                "x": 18,
+                "y": 31
+            },
+            "id": 26,
+            "options": {
+                "displayLabels": ["percent"],
+                "legend": {
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true,
+                    "values": ["value", "percent"]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "/.*/",
+                    "values": false
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "9.2.4",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\")\n  |> group(columns: [\"upstream\"])\n  |> count()\n",
+                    "refId": "A"
+                }
+            ],
+            "title": "Upstream",
+            "type": "piechart"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 43
+            },
+            "id": 19,
+            "panels": [],
+            "title": "Reply time",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "scaleDistribution": {
+                            "type": "linear"
+                        }
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 13,
+                "w": 24,
+                "x": 0,
+                "y": 44
+            },
+            "id": 15,
+            "options": {
+                "calculate": false,
+                "cellGap": 1,
+                "cellValues": {
+                    "unit": "ms"
+                },
+                "color": {
+                    "exponent": 0.5,
+                    "fill": "dark-orange",
+                    "max": 200,
+                    "mode": "scheme",
+                    "reverse": false,
+                    "scale": "exponential",
+                    "scheme": "Turbo",
+                    "steps": 64
+                },
+                "exemplars": {
+                    "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                    "le": 1e-9
+                },
+                "legend": {
+                    "show": true
+                },
+                "rowsFrame": {
+                    "layout": "unknown"
+                },
+                "tooltip": {
+                    "show": true,
+                    "yHistogram": false
+                },
+                "yAxis": {
+                    "axisLabel": "Client",
+                    "axisPlacement": "left",
+                    "reverse": false
+                }
+            },
+            "pluginVersion": "9.3.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n  |> drop(columns: [\"_start\", \"_stop\"])",
+                    "refId": "A"
+                }
+            ],
+            "title": "Reply time",
+            "type": "heatmap"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P3C6603E967DC8568"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "displayName": "${__field.labels.client}",
+                    "mappings": [],
+                    "max": 202,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 13,
+                "w": 24,
+                "x": 0,
+                "y": 57
+            },
+            "id": 52,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n  |> aggregateWindow(every: 5m, fn: mean)\n  |> set(key: \"client\", value: \"mean\")",
+                    "refId": "mean"
+                },
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "hide": false,
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n  |> aggregateWindow(every: 5m, fn: median)\n    |> set(key: \"client\", value: \"median\")",
+                    "refId": "median"
+                },
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "hide": false,
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n    |> aggregateWindow(\n        every: 5m,\n        fn: (tables=<-, column) => tables\n            |> quantile(q: 0.9, method: \"exact_selector\"),\n    )\n    |> set(key: \"client\", value: \"quantile 90%\")",
+                    "refId": "90%"
+                },
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "hide": false,
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n    |> aggregateWindow(\n        every: 5m,\n        fn: (tables=<-, column) => tables\n            |> quantile(q: 0.95, method: \"exact_selector\"),\n    )\n    |> set(key: \"client\", value: \"quantile 95%\")",
+                    "refId": "95%"
+                },
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P3C6603E967DC8568"
+                    },
+                    "hide": false,
+                    "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r._field == \"reply_time_ms\")\n  |> group(columns: [\"client\"])\n    |> aggregateWindow(\n        every: 5m,\n        fn: (tables=<-, column) => tables\n            |> quantile(q: 0.99, method: \"exact_selector\"),\n    )\n    |> set(key: \"client\", value: \"quantile 99%\")",
+                    "refId": "99%"
+                }
+            ],
+            "title": "Reply time - 5 min window",
+            "type": "timeseries"
+        }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": ["pihole"],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "pihole",
+                    "value": "pihole"
+                },
+                "datasource": {
+                    "type": "influxdb",
+                    "uid": "P3C6603E967DC8568"
+                },
+                "definition": "buckets()",
+                "hide": 0,
+                "includeAll": false,
+                "multi": false,
+                "name": "bucket",
+                "options": [],
+                "query": "buckets()",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "logs",
+                    "value": "logs"
+                },
+                "datasource": {
+                    "type": "influxdb",
+                    "uid": "P3C6603E967DC8568"
+                },
+                "definition": "import \"influxdata/influxdb/v1\"\nv1.measurements(bucket: \"${bucket}\")",
+                "hide": 0,
+                "includeAll": false,
+                "multi": false,
+                "name": "measurement",
+                "options": [],
+                "query": "import \"influxdata/influxdb/v1\"\nv1.measurements(bucket: \"${bucket}\")",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-3h",
+        "to": "now"
+    },
+    "timepicker": {
+        "hidden": false,
+        "nowDelay": "",
+        "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
+        ],
+        "time_options": [
+            "5m",
+            "15m",
+            "1h",
+            "6h",
+            "12h",
+            "24h",
+            "2d",
+            "7d",
+            "30d"
+        ]
+    },
+    "timezone": "",
+    "title": "Pi-Hole - Logs",
+    "version": 1,
+    "weekStart": ""
+}

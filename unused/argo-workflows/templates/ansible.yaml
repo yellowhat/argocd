@@ -1,0 +1,48 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: ansible
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Replace
+  startingDeadlineSeconds: 0
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  workflowSpec:
+    entrypoint: git-clone
+    hostAliases:
+      - ip: "192.168.0.10"
+        hostnames:
+          - mule
+    volumes:
+      - name: ssh
+        secret:
+          secretName: ssh-private-key  # pragma: allowlist secret
+          defaultMode: 384 # 0600
+    templates:
+      - name: git-clone
+        inputs:
+          artifacts:
+            - name: source
+              path: /src
+              git:
+                repo: https://gitlab.com/yellowhat-labs/mule.git
+                depth: 1
+        container:
+          image: registry.gitlab.com/yellowhat-labs/mule:main
+          command:
+            - ansible-playbook
+          args:
+            - install.yaml
+          workingDir: /src/ansible
+          env:
+            - name: ANSIBLE_PRIVATE_KEY_FILE
+              value: /ssh/id_rsa
+            - name: ANSIBLE_VAULT_PASSWORD_FILE
+              value: /ssh/vault
+            - name: K8S_AUTH_KUBECONFIG  # Force to avoid overlap with Service Account
+              value: /root/.kube/config
+          volumeMounts:
+            - name: ssh
+              mountPath: /ssh

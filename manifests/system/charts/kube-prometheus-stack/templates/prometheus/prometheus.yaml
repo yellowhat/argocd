@@ -1,0 +1,83 @@
+---
+# Source: system/charts/kube-prometheus-stack/templates/prometheus/prometheus.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: system-kube-prometheus-sta-prometheus
+  namespace: system
+  labels:
+    app: kube-prometheus-stack-prometheus
+    
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/version: "61.9.0"
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    chart: kube-prometheus-stack-61.9.0
+    release: "system"
+    heritage: "Helm"
+spec:
+  automountServiceAccountToken: true
+  alerting:
+    alertmanagers:
+      - namespace: system
+        name: system-kube-prometheus-sta-alertmanager
+        port: http-web
+        pathPrefix: "/"
+        apiVersion: v2
+  image: "quay.io/prometheus/prometheus:v2.54.0"
+  version: v2.54.0
+  externalUrl: http://system-kube-prometheus-sta-prometheus.system:9090
+  paused: false
+  replicas: 1
+  shards: 1
+  logLevel:  info
+  logFormat:  logfmt
+  listenLocal: false
+  enableAdminAPI: false
+  retention: "1y"
+  retentionSize: "100GB"
+  tsdb:
+    outOfOrderTimeWindow: 0s
+  walCompression: true
+  routePrefix: "/"
+  serviceAccountName: system-kube-prometheus-sta-prometheus
+  serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: {}
+  podMonitorSelector:
+    matchLabels:
+      release: "system"
+
+  podMonitorNamespaceSelector: {}
+  probeSelector:
+    matchLabels:
+      release: "system"
+
+  probeNamespaceSelector: {}
+  securityContext:
+    fsGroup: 0
+    runAsGroup: 0
+    runAsNonRoot: false
+    runAsUser: 0
+    seccompProfile:
+      type: RuntimeDefault
+  ruleNamespaceSelector: {}
+  ruleSelector: {}
+  scrapeConfigSelector:
+    matchLabels:
+      release: "system"
+
+  scrapeConfigNamespaceSelector: {}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: prometheus
+  additionalScrapeConfigs:
+    name: system-kube-prometheus-sta-prometheus-scrape-confg
+    key: additional-scrape-configs.yaml
+  portName: http-web
+  hostNetwork: false

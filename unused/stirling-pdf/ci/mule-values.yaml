@@ -1,0 +1,32 @@
+---
+annotations:
+  ignore-check.kube-linter.io/no-read-only-root-fs: Required to write logs
+  ignore-check.kube-linter.io/run-as-non-root: Required to copy files
+
+ingress:
+  enabled: true
+  ingressClassName: cilium
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: pdf.mukka.haus
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: stirling-pdf-tls
+      hosts:
+        - pdf.mukka.haus
+
+extraManifests:
+  - apiVersion: cilium.io/v2
+    kind: CiliumNetworkPolicy
+    metadata:
+      name: restrict
+    spec:
+      # Apply to all pods in namespacee
+      endpointSelector: {}
+      # Allow ingress from anywhere
+      # Block all egress
+      egress:
+        - {}

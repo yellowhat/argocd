@@ -1,0 +1,19 @@
+---
+# Source: cilium/charts/cilium/templates/hubble-relay/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hubble-relay
+  namespace: kube-system
+  labels:
+spec:
+  selector:
+    matchLabels:
+      k8s-app: hubble-relay
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  endpoints:
+  - port: metrics
+    interval: "10s"
+    path: /metrics

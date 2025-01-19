@@ -1,0 +1,39 @@
+---
+# Source: system/charts/kube-prometheus-stack/templates/prometheus-operator/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: system-kube-prometheus-sta-operator
+  namespace: system
+  labels:
+    
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/version: "61.9.0"
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    chart: kube-prometheus-stack-61.9.0
+    release: "system"
+    heritage: "Helm"
+    app: kube-prometheus-stack-operator
+    app.kubernetes.io/name: kube-prometheus-stack-prometheus-operator
+    app.kubernetes.io/component: prometheus-operator
+spec:
+  
+  endpoints:
+  - port: https
+    scheme: https
+    tlsConfig:
+      serverName: system-kube-prometheus-sta-operator
+      ca:
+        secret:
+          name: system-kube-prometheus-sta-admission
+          key: ca
+          optional: false
+    honorLabels: true
+  selector:
+    matchLabels:
+      app: kube-prometheus-stack-operator
+      release: "system"
+  namespaceSelector:
+    matchNames:
+      - "system"

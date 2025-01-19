@@ -1,0 +1,34 @@
+---
+# Source: argo-cd/charts/argo-cd/templates/argocd-server/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argo-cd-server
+  namespace: argo-cd
+  labels:
+    helm.sh/chart: argo-cd-7.4.1
+    app.kubernetes.io/name: argo-cd-server
+    app.kubernetes.io/instance: argo-cd
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/version: "v2.12.0"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: cilium
+  rules:
+    - host: argocd.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argo-cd-server
+                port:
+                  number: 80
+  tls:
+    - hosts:
+      - argocd.example.com
+      secretName: argocd-server-tls

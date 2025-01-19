@@ -1,0 +1,9 @@
+---
+# Source: cilium/templates/cilium-l2announcement.yaml
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: default
+  namespace: kube-system
+spec:
+  loadBalancerIPs: true

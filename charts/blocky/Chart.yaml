@@ -1,0 +1,17 @@
+---
+apiVersion: v2
+name: blocky
+description: blocky helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/blocky
+type: application
+version: 2.1.1
+# renovate: dockerRepo=ghcr.io/0xerr0r/blocky
+appVersion: v0.24
+icon: https://raw.githubusercontent.com/0xERR0R/blocky/main/docs/blocky.svg
+sources:
+  - https://0xerr0r.github.io/blocky
+  - https://github.com/0xERR0R/blocky
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/blocky
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

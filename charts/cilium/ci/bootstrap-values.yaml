@@ -1,0 +1,19 @@
+---
+cilium:
+  operator:
+    prometheus:
+      serviceMonitor:
+        enabled: false
+
+  prometheus:
+    serviceMonitor:
+      enabled: false
+
+  hubble:
+    relay:
+      prometheus:
+        serviceMonitor:
+          enabled: false
+    metrics:
+      serviceMonitor:
+        enabled: false

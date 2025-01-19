@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should pass with default values
+    release:
+      name: my-release
+      namespace: my-namespace
+    asserts:
+      - equal:
+          path: metadata.name
+          value: my-release-stirling-pdf
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: my-release
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: stirling-pdf
+      - notExists:
+          path: metadata.annotations
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - notExists:
+          path: spec.externalTrafficPolicy
+      - equal:
+          path: spec.ports
+          value:
+            - name: http
+              port: 8080
+              protocol: TCP
+              targetPort: http
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: my-release
+            app.kubernetes.io/name: stirling-pdf
+
+  - it: should add labels
+    set:
+      service:
+        labels:
+          foo: bar
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: RELEASE-NAME
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: stirling-pdf
+      - equal:
+          path: metadata.labels.foo
+          value: bar
+
+  - it: should add annotations
+    set:
+      service:
+        annotations:
+          foo: bar
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            foo: bar
+
+  - it: should change ports
+    set:
+      service:
+        port: 8090
+    asserts:
+      - equal:
+          path: spec.ports
+          value:
+            - name: http
+              port: 8090
+              protocol: TCP
+              targetPort: http
+
+  - it: should change type to NodePort
+    set:
+      service:
+        type: NodePort
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+
+  - it: should change type to NodePort and externalTrafficPolicy
+    set:
+      service:
+        type: NodePort
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+
+  - it: should change type to LoadBalancer
+    set:
+      service:
+        type: LoadBalancer
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer

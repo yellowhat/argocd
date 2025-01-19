@@ -1,0 +1,133 @@
+{
+    "Server": {
+        "applicationTitle": "Memories",
+        "port": 8080,
+        "host": "0.0.0.0",
+        "Log": {
+            "//[level]": ["Logging level"],
+            "level": "info",
+            "//[sqlLevel]": ["Logging level for SQL queries"],
+            "sqlLevel": "error"
+        }
+    },
+    "Users": {
+        "authenticationRequired": false,
+        "unAuthenticatedUserRole": "Admin"
+    },
+    "Gallery": {
+        "//[enableCache]": [
+            "Caches directory contents and search results for better performance"
+        ],
+        "enableCache": true,
+        "//[enableOnScrollRendering]": [
+            "Those thumbnails get higher priority that are visible on the screen"
+        ],
+        "enableOnScrollRendering": true,
+        "//[enableDirectorySortingByDate]": [
+            "If enabled, directories will be sorted by date, like photos, otherwise by name. Directory date is the last modification time of that directory not the creation date of the oldest photo"
+        ],
+        "enableDirectorySortingByDate": false,
+        "//[enableOnScrollThumbnailPrioritising]": [
+            "Those thumbnails will be rendered first that are in view"
+        ],
+        "enableOnScrollThumbnailPrioritising": true,
+        "NavBar": {
+            "//[enableDownloadZip]": [
+                "Enable download zip of a directory contents Directory flattening. (Does not work for searches.)"
+            ],
+            "enableDownloadZip": false,
+            "//[enableDirectoryFlattening]": [
+                "Adds a button to flattens the file structure, by listing the content of all subdirectories. (Won't work if the gallery has multiple folders with the same path.)"
+            ],
+            "enableDirectoryFlattening": true,
+            "//[defaultGidSize]": [
+                "Default grid size that is used to render photos and videos"
+            ],
+            "defaultGidSize": "medium",
+            "//[showItemCount]": [
+                "Shows the number photos and videos on the navigation bar"
+            ],
+            "showItemCount": true,
+            "//[links]": ["Visible links in the top menu"],
+            "links": [
+                {
+                    "type": "gallery"
+                }
+            ]
+        },
+        "//[captionFirstNaming]": [
+            "Show the caption (IPTC 120) tags from the EXIF data instead of the filenames"
+        ],
+        "captionFirstNaming": false,
+        "Themes": {
+            "//[enabled]": ["Enable themes and color modes"],
+            "enabled": true,
+            "//[defaultMode]": [
+                "Sets the default theme mode that is used for the application"
+            ],
+            "defaultMode": "dark",
+            "//[selectedTheme]": ["Selected theme to use on the site"],
+            "selectedTheme": "default"
+        },
+        "//[InlineBlogStartsOpen]": [
+            "Makes inline blog (*.md files content) to be auto open"
+        ],
+        "InlineBlogStartsOpen": false,
+        "//[TopBlogStartsOpen]": [
+            "Makes inline blog (*.md files content) to be auto open"
+        ],
+        "TopBlogStartsOpen": false
+    },
+    "Media": {
+        "//[folder]": [
+            "Images are loaded from this folder (read permission required)"
+        ],
+        "folder": "/images",
+        "//[tempFolder]": [
+            "Thumbnails, converted photos, videos will be stored here (write permission required)"
+        ],
+        "tempFolder": "/data/tmp"
+    },
+    "Search": {
+        "enabled": true
+    },
+    "Sharing": {
+        "enabled": false
+    },
+    "Map": {
+        "enabled": true,
+        "//[useImageMarkers]": [
+            "Map will use thumbnail images as markers instead of the default pin"
+        ],
+        "useImageMarkers": true,
+        "mapProvider": "OpenStreetMap"
+    },
+    "Faces": {
+        "enabled": true,
+        "//[keywordsToPersons]": [
+            "If a photo has the same face (person) name and keyword, the app removes the duplicate, keeping the face only"
+        ],
+        "keywordsToPersons": true,
+        "//[writeAccessMinRole]": [
+            "Required minimum right to star (favourite) a face"
+        ],
+        "writeAccessMinRole": "Admin",
+        "//[readAccessMinRole]": [
+            "Required minimum right to show the faces tab"
+        ],
+        "readAccessMinRole": "User"
+    },
+    "RandomPhoto": {
+        "//[enabled]": [
+            "Allow to create URL that returns a photo random selected from your gallery"
+        ],
+        "enabled": true
+    },
+    "Database": {
+        "type": "sqlite",
+        "dbFolder": "/data/db",
+        "sqlite": {
+            "DBFileName": "sqlite.db"
+        }
+    }
+}

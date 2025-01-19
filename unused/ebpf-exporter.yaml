@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ebpf-exporter
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: ebpf-exporter
+    repoURL: https://gitlab.com/api/v4/projects/40025817/packages/helm/main
+    targetRevision: 1.0.3
+  destination:
+    namespace: ebpf-exporter
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: "*"
+      kind: ServiceMonitor
+      jqPathExpressions:
+        - .spec.endpoints[].relabelings

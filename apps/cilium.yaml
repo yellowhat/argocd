@@ -1,0 +1,48 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    # Use foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    path: manifests/cilium
+    repoURL: https://github.com/yellowhat/argocd
+    # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+
+    # path: charts/cilium
+    # repoURL: https://github.com/yellowhat/argocd
+    # # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    # targetRevision: main
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false  # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - kind: Service
+      name: cilium-ingress
+      jqPathExpressions:
+        - .spec.ports[]?.nodePort
+    - group: apps
+      kind: DaemonSet
+      name: cilium
+      jqPathExpressions:
+        - .spec.template.spec.containers[]?.volumeMounts[]?.readOnly
+    - group: apps
+      kind: DaemonSet
+      name: cilium-envoy
+      jqPathExpressions:
+        - .spec.template.spec.containers[]?.volumeMounts[]?.readOnly

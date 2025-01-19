@@ -1,0 +1,19 @@
+---
+apiVersion: v2
+name: argo-workflows
+description: Install argo-workflows
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/argo-workflows
+type: application
+version: 1.4.9
+appVersion: 0.40.14
+icon: https://argoproj.github.io/argo-workflows/assets/logo.png
+sources:
+  - https://github.com/argoproj/argo-helm/tree/main/charts/argo-workflows
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/argo-workflows
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: argo-workflows
+    version: 0.40.14
+    repository: https://argoproj.github.io/argo-helm

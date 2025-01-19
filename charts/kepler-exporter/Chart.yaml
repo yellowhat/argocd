@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: kepler-exporter
+description: Probe energy related system stats
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/kepler
+type: application
+version: 1.0.24
+appVersion: 0.5.7
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://github.com/sustainable-computing-io/kepler
+  - https://github.com/sustainable-computing-io/kepler-helm-chart/tree/main/chart/kepler
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/kepler
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: kepler
+    version: 0.5.7
+    repository: https://sustainable-computing-io.github.io/kepler-helm-chart

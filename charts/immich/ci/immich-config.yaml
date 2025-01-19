@@ -1,0 +1,14 @@
+---
+newVersionCheck:
+  enabled: false
+
+trash:
+  enabled: false
+
+machineLearning:
+  enabled: false
+
+ffmpeg:
+  accelDecode: true
+  accel: qsv  # Intel >7th gen
+  preferredHwDevice: auto

@@ -1,0 +1,354 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+# -- Replaces the generated name
+fullnameOverride: ""
+
+# -- Number of replicas
+replicaCount: 1
+
+# -- Deployment strategy
+strategyType: RollingUpdate
+
+# -- Maximum number of Pods that can be created over the desired number of Pods (RollingUpdate)
+maxSurge: 1
+
+# -- Maximum number of Pods that can be unavailable during the update process (RollingUpdate)
+maxUnavailable: 0
+
+image:
+  # -- Repository to pull the image from
+  repository: "pihole/pihole"
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: IfNotPresent
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional pod annotations
+podAnnotations: {}
+# Example below allows Prometheus to scape on metric port (requires pihole-exporter sidecar enabled)
+# prometheus.io/port: '9617'
+# prometheus.io/scrape: 'true'
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext: {}
+# runAsUser: 1000
+# runAsGroup: 3000
+# fsGroup: 2000
+
+# -- Privileges and access control settings for a container
+securityContext: {}
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraVolumes: {}
+# external-conf:
+#   configMap:
+#     name: pi-hole-lighttpd-external-conf
+
+# -- Extra volume mount definition
+extraVolumeMounts: {}
+# external-conf:
+#   mountPath: /etc/lighttpd/external.conf
+#   subPath: external.conf
+
+# -- Control pod placement
+topologySpreadConstraints: []
+# - maxSkew: <integer>
+#   topologyKey: <string>
+#   whenUnsatisfiable: <string>
+#   labelSelector: <object>
+
+# -- Extra environment variables
+extraEnvVars: {}
+# TZ: UTC
+
+# -- Extra environment variables from secrets
+extraEnvVarsSecret: {}
+# env_var:
+#   name: secret-name
+#   key: secret-key
+
+dualStack:
+  # -- Enable DualStack services or creation of separate IPv6 services if `serviceDns.type=LoadBalancer`
+  enabled: false
+
+dnsHostPort:
+  enabled: false
+  port: 53
+
+serviceDhcp:
+  annotations: {}
+  # metallb.universe.tf/address-pool: network-services
+  # metallb.universe.tf/allow-shared-ip: pihole-svc
+  # metallb.universe.tf/loadBalancerIPs: "192.168.178.200"
+  enabled: true
+  type: ClusterIP
+  port: 67
+  nodePort: ""
+  externalTrafficPolicy: Local
+
+serviceDns:
+  annotations: {}
+  # metallb.universe.tf/address-pool: network-services
+  # metallb.universe.tf/allow-shared-ip: pihole-svc
+  # metallb.universe.tf/loadBalancerIPs: "192.168.178.200"
+  type: ClusterIP
+  port: 53
+  nodePort: ""
+  externalTrafficPolicy: Local
+  # -- Deploys a mixed (TCP + UDP) Service instead of separate ones
+  mixedService: false
+
+serviceWeb:
+  annotations: {}
+  # metallb.universe.tf/address-pool: network-services
+  # metallb.universe.tf/allow-shared-ip: pihole-svc
+  # metallb.universe.tf/loadBalancerIPs: "192.168.178.200"
+  type: ClusterIP
+  externalTrafficPolicy: Local
+  http:
+    enabled: true
+    port: 80
+    nodePort: ""
+  https:
+    enabled: true
+    port: 443
+    nodePort: ""
+
+# -- Pi-Hole CNAME
+virtualHost: pi.hole
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  # - host: example.local
+  #   paths:
+  #     - path: /
+  #       pathType: ImplementationSpecific
+  tls: []
+  # - secretName: example-tls
+  #   hosts:
+  #     - example.local
+
+probes:
+  liveness:
+    # -- Enable healthcheck for the deployment
+    enabled: true
+    initialDelaySeconds: 60
+    failureThreshold: 10
+    timeoutSeconds: 5
+    port: http
+    scheme: HTTP
+  readiness:
+    # -- Enable readiness probe for the deployment
+    enabled: true
+    initialDelaySeconds: 60
+    failureThreshold: 3
+    timeoutSeconds: 5
+    port: http
+    scheme: HTTP
+
+persistence:
+  # -- Enable persistence
+  enabled: false
+  annotations: {}
+  # -- Storage class
+  # storageClassName: ""
+  # -- Reuse an existing claim
+  # existingClaim: your-claim
+  # subPath: some-subpath
+  accessModes:
+    - ReadWriteOnce
+  size: "500Mi"
+
+# -- Administrator password when not using an existing secret
+adminPassword: ""
+
+# -- Use an existing secret for the admin password
+admin:
+  # -- Secret name
+  existingSecret: ""
+  # -- Secret key
+  passwordKey: ""
+
+# -- Default upstream DNS 1 server to use
+DNS1: "8.8.8.8"
+# -- Default upstream DNS 2 server to use
+DNS2: "8.8.4.4"
+
+podDnsConfig:
+  # -- Enable custom Pod DNS configuration
+  enabled: true
+  # -- Pod's DNS policy, `None`: ignore DNS settings from Kubernetes environment
+  policy: "None"
+  # -- Pod's DNS nameserver
+  nameservers:
+    - 127.0.0.1
+    - 8.8.8.8
+
+antiaff:
+  # -- Enable antiaffinity (example: 2 pihole DNS in the same cluster)
+  enabled: false
+  # -- pihole release to be avoided
+  avoidRelease: pihole1
+  # -- Preferred or required
+  strict: true
+
+doh:
+  # -- Enable DNS over HTTPs via cloudflared
+  enabled: false
+  name: cloudflared
+  repository: "crazymax/cloudflared"
+  tag: latest
+  pullPolicy: IfNotPresent
+  # -- Extra environment variables to the DoH container
+  envVars: {}
+  # TUNNEL_DNS_UPSTREAM: "https://1.1.1.2/dns-query,https://1.0.0.2/dns-query"
+
+  probes:
+    liveness:
+      # -- Enable healthcheck for the doh container
+      enabled: true
+      probe:
+        exec:
+          command:
+            - nslookup
+            - -po=5053
+            - cloudflare.com
+            - '127.0.0.1'
+      initialDelaySeconds: 60
+      failureThreshold: 10
+      timeoutSeconds: 5
+
+dnsmasq:
+  # -- Add upstream dns servers.
+  upstreamServers: []
+  # - server=/foo.bar/192.168.178.10
+  # - server=/bar.foo/192.168.178.11
+  #
+  # -- Add custom dns entries
+  customDnsEntries: []
+  # - address=/foo.bar/192.168.178.10
+  # - address=/bar.foo/192.168.178.11
+
+  # -- Dnsmasq reads the /etc/hosts file to resolve ips, you can add additional entries
+  additionalHostsEntries: []
+  # - 192.168.0.3     host4
+  # - 192.168.0.4     host5
+
+  # -- Static DHCP config
+  staticDhcpEntries: []
+  # - dhcp-host=MAC_ADDRESS,IP_ADDRESS,HOSTNAME
+
+  # -- Other options
+  customSettings:
+  # - rebind-domain-ok=/plex.direct/
+
+  # -- Custom CNAME  entries that should point to `A` records or elements in customDnsEntries array.
+  customCnameEntries: []
+  # - cname=cname.foo.bar,foo.bar
+  # - cname=cname.bar.foo,bar.foo
+  # - cname=cname record,dns record
+
+# -- Adlists to import
+adlists: {}
+# - https://hosts-file.net/grm.txt
+# - https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
+
+# -- Whitelisted domains to import
+whitelist: {}
+# - clients4.google.com
+
+# -- Blacklisted domains to import
+blacklist: {}
+# - *.blackist.com
+
+# -- Blacklisted regex expressions to import
+regex: {}
+# - (^|\.)facebook\.com$
+
+# -- Values that should be added to pihole-FTL.conf
+ftl: {}
+# MAXDBDAYS: 14
+
+# -- Container port for HTTP traffic
+webHttp: "80"
+
+# -- Container port for HTTPS traffic
+webHttps: "443"
+
+# -- Pod hostname
+hostname: ""
+
+# -- Enable use host network
+hostNetwork: false
+
+# -- Enable privileged mode
+privileged: false
+
+monitoring:
+  podMonitor:
+    # -- Deploy PodMonitor custom resource
+    enabled: false
+  sidecar:
+    # -- Deploy sidecar to make available metrics
+    enabled: false
+    port: 9617
+    image:
+      repository: ekofr/pihole-exporter
+      tag: 'v0.4.0'
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 50m
+        memory: 64Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  influxdb:
+    # -- Push pihole logs to InfluxDB
+    enabled: false
+    image:
+      repository: registry.gitlab.com/yellowhat-labs/pihole2influxdb
+      tag: 'v1.2.11'
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 250m
+        memory: 64Mi
+      requests:
+        cpu: 250m
+        memory: 64Mi
+
+dnscrypt:
+  # -- Deploy sidecar to use dnscrypt-proxy
+  enabled: false
+  image:
+    repository: klutchell/dnscrypt-proxy
+    tag: '2.1.4'
+    pullPolicy: IfNotPresent
+  config: ""
+  resources: {}

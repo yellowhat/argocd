@@ -1,0 +1,156 @@
+{{- with .Values.server }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "immich.fullname" $ }}
+  labels:
+    {{- include "immich.labels" $ | nindent 4 }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "immich.selectorLabels" $ | nindent 6 }}
+  serviceName: {{ include "immich.fullname" $ }}
+  replicas: {{ .replicaCount }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/server/configmap.yaml") $ | sha256sum }}
+        {{- with .podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "immich.selectorLabels" $ | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      {{- with .imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ .image.repository }}:{{ .image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          securityContext:
+            {{- toYaml .securityContext | nindent 12 }}
+          env:
+            - name: IMMICH_PORT
+              value: "3001"
+            {{- if $.Values.metrics.enabled }}
+            - name: IMMICH_METRICS
+              value: "true"
+            {{- end }}
+            - name: IMMICH_CONFIG_FILE
+              value: /etc/immich.yaml
+            {{- range $key, $value := .extraEnvVars }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .extraEnvVarsSecret }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  key: {{ $value.key | quote }}
+                  name: {{ $value.name | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3001
+              protocol: TCP
+            {{- if $.Values.metrics.enabled }}
+            - name: metrics-api
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics-ms
+              containerPort: 8082
+              protocol: TCP
+            {{- end }}
+          startupProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+            periodSeconds: 1
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /api/server-info/ping
+          volumeMounts:
+            - name: config
+              mountPath: /etc/immich.yaml
+              subPath: immich-config.yaml
+            {{- range $key, $values := .persistence }}
+            {{- if .enabled }}
+            - name: {{ $key }}
+              mountPath: {{ .mountPath }}
+              {{- with .subPath }}
+              subPath: {{ . }}
+              {{- end }}
+              readOnly: {{ default false .readOnly }}
+            {{- end }}
+            {{- end }}
+            {{- with .extraVolumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "immich.fullname" $ }}-config
+        {{- with .extraVolumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    {{- range $key, $values := .persistence }}
+    {{- if .enabled }}
+    - metadata:
+        name: {{ $key }}
+        labels:
+          {{- include "immich.selectorLabels" $ | nindent 10 }}
+        {{- with .annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        {{- with .accessModes }}
+        accessModes:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .storageClassName }}
+        storageClassName: {{ . | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .size | quote }}
+    {{- end }}
+    {{- end }}
+{{- end }}

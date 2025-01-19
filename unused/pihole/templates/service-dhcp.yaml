@@ -1,0 +1,63 @@
+---
+{{- if .Values.serviceDhcp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pihole.fullname" . }}-dhcp
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+  {{- with .Values.serviceDhcp.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.serviceDhcp.type }}
+  {{- if and (.Values.dualStack.enabled) (not (eq .Values.serviceDhcp.type "LoadBalancer")) }}
+  ipFamilies:
+  - IPv4
+  - IPv6
+  ipFamilyPolicy: PreferDualStack
+  {{- end }}
+  {{- if or (eq .Values.serviceDhcp.type "NodePort") (eq .Values.serviceDhcp.type "LoadBalancer") }}
+  externalTrafficPolicy: {{ .Values.serviceDhcp.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.serviceDhcp.port }}
+      targetPort: client-udp
+      {{- if and (.Values.serviceDhcp.nodePort) (eq .Values.serviceDhcp.type "NodePort") }}
+      nodePort: {{ .Values.serviceDhcp.nodePort }}
+      {{- end }}
+      protocol: UDP
+      name: client-udp
+  selector:
+    {{- include "pihole.selectorLabels" . | nindent 4 }}
+
+---
+{{- if and (.Values.dualStack.enabled) (eq .Values.serviceDhcp.type "LoadBalancer") -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pihole.fullname" . }}-dhcp-ivp6
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+  {{- with .Values.serviceDhcp.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.serviceDhcp.type }}
+  ipFamilies:
+  - IPv6
+  ipFamilyPolicy: SingleStack
+  {{- if or (eq .Values.serviceDhcp.type "NodePort") (eq .Values.serviceDhcp.type "LoadBalancer") }}
+  externalTrafficPolicy: {{ .Values.serviceDhcp.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: 67
+      targetPort: client-udp
+      protocol: UDP
+      name: client-udp
+  selector:
+    {{- include "pihole.selectorLabels" . | nindent 4 }}
+{{- end }}
+{{- end }}

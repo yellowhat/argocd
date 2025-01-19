@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: cilium
+description: Install cilium
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/cilium
+type: application
+version: 1.1.0
+appVersion: 1.16.0
+icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+sources:
+  - https://cilium.io
+  - https://github.com/cilium/cilium/tree/master/install/kubernetes/cilium
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/cilium
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org
+dependencies:
+  - name: cilium
+    version: 1.16.0
+    repository: https://helm.cilium.io

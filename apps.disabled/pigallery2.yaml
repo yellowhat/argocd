@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pigallery2
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    # Use foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    path: manifests/pigallery2
+    repoURL: https://github.com/yellowhat/argocd
+    # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+
+    # path: charts/pigallery2
+    # repoURL: https://github.com/yellowhat/argocd
+    # # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    # targetRevision: main
+    # helm:
+    #   valueFiles:
+    #     - ci/mule-values.yaml
+  destination:
+    namespace: pigallery2
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true

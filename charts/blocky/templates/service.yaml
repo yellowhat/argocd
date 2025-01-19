@@ -1,0 +1,40 @@
+{{- with .Values.service }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "blocky.fullname" $ }}
+  labels:
+    {{- include "blocky.labels" $ | nindent 4 }}
+    {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .type }}
+  {{- if or (eq .type "NodePort") (eq .type "LoadBalancer") }}
+  externalTrafficPolicy: {{ .externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - name: dns-tcp
+      targetPort: dns-tcp
+      port: {{ .ports.dns_tcp }}
+      protocol: TCP
+    - name: dns-udp
+      targetPort: dns-udp
+      port: {{ .ports.dns_udp }}
+      protocol: UDP
+    - name: http
+      targetPort: http
+      port: {{ .ports.http }}
+      protocol: TCP
+    - name: https
+      targetPort: https
+      port: {{ .ports.https }}
+      protocol: TCP
+  selector:
+    {{- include "blocky.selectorLabels" $ | nindent 4 }}
+{{- end }}

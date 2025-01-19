@@ -1,0 +1,97 @@
+---
+# Source: jellyfin/templates/extra-manifests.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: jellyfin-config
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+# Source: jellyfin/templates/extra-manifests.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: jellyfin-media
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+# Source: jellyfin/templates/extra-manifests.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: jellyfin-config
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  local:
+    path: /data/jellyfin-config
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: disk
+          operator: In
+          values:
+          - local
+  storageClassName: jellyfin-config
+---
+# Source: jellyfin/templates/extra-manifests.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    type: local
+  name: jellyfin-media
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi
+  local:
+    path: /data/jellyfin-media
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: disk
+          operator: In
+          values:
+          - local
+  storageClassName: jellyfin-media
+---
+# Source: jellyfin/templates/extra-manifests.yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: restrict
+spec:
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+        k8s-app: kube-dns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      rules:
+        dns:
+        - matchPattern: '*'
+  - toFQDNs:
+    - matchName: repo.jellyfin.org
+    - matchName: fra1.mirror.jellyfin.org
+    - matchName: raw.githubusercontent.com
+    - matchName: api.opensubtitles.com
+    - matchName: www.omdbapi.com
+    - matchName: api.themoviedb.org
+    - matchName: image.tmdb.org
+    toPorts:
+    - ports:
+      - port: "443"
+  - toEndpoints:
+    - {}
+  endpointSelector: {}

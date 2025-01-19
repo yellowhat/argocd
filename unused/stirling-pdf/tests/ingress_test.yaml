@@ -1,0 +1,106 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should pass with default values
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create the Ingress object by enabling it
+    release:
+      name: my-release
+      namespace: my-namespace
+    set:
+      ingress:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.name
+          value: my-release-stirling-pdf
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: my-release
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: stirling-pdf
+      - isNullOrEmpty:
+          path: spec.ingressClassName
+      - notExists:
+          path: spec.tls
+      - notExists:
+          path: spec.rules[0]
+
+  - it: should change ingressClassName
+    set:
+      ingress:
+        enabled: true
+        ingressClassName: foo
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: foo
+
+  - it: should set annotations if given
+    set:
+      ingress:
+        enabled: true
+        annotations:
+          foo: bar
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            foo: bar
+
+  - it: should set host if given
+    set:
+      ingress:
+        enabled: true
+        hosts:
+          - host: example.local
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+    asserts:
+      - notExists:
+          path: spec.tls
+      - equal:
+          path: spec.rules
+          value:
+            - host: example.local
+              http:
+                paths:
+                  - backend:
+                      service:
+                        name: RELEASE-NAME-stirling-pdf
+                        port:
+                          number: 8080
+                    path: /
+                    pathType: ImplementationSpecific
+
+  - it: should set tls if given
+    set:
+      ingress:
+        enabled: true
+        tls:
+          - secretName: example-tls
+            hosts:
+              - example.local
+    asserts:
+      - equal:
+          path: spec.tls
+          value:
+            - hosts:
+                - example.local
+              secretName: example-tls
+      - notExists:
+          path: spec.rules[0]

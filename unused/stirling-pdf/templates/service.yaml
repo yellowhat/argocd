@@ -1,0 +1,26 @@
+{{- with .Values.service }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "stirling-pdf.fullname" $ }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "stirling-pdf.labels" $ | nindent 4 }}
+    {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .type }}
+  ports:
+    - name: http
+      targetPort: http
+      port: {{ .port }}
+      protocol: TCP
+  selector:
+    {{- include "stirling-pdf.selectorLabels" $ | nindent 4 }}
+{{- end }}

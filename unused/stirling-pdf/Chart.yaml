@@ -1,0 +1,16 @@
+---
+apiVersion: v2
+name: stirling-pdf
+description: stirling-pdf helm chart
+home: https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/stirling-pdf
+type: application
+version: 1.1.35
+# renovate: dockerRepo=ghcr.io/yellowhat/registry/stirling-pdf
+appVersion: 0.37.1
+icon: https://raw.githubusercontent.com/Stirling-Tools/Stirling-PDF/main/docs/stirling.png
+sources:
+  - https://github.com/Stirling-Tools/Stirling-PDF
+  - https://gitlab.com/yellowhat-labs/mule/-/tree/main/charts/stirling-pdf
+maintainers:
+  - name: yellowhat
+    email: yellowhat@mailbox.org

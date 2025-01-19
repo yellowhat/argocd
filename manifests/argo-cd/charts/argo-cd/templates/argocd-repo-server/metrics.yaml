@@ -1,0 +1,25 @@
+---
+# Source: argo-cd/charts/argo-cd/templates/argocd-repo-server/metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-cd-repo-server-metrics
+  namespace: argo-cd
+  labels:
+    helm.sh/chart: argo-cd-7.4.1
+    app.kubernetes.io/name: argo-cd-repo-server-metrics
+    app.kubernetes.io/instance: argo-cd
+    app.kubernetes.io/component: repo-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/version: "v2.12.0"
+spec:
+  type: ClusterIP  
+  ports:
+  - name: http-metrics
+    protocol: TCP
+    port: 8084
+    targetPort: metrics
+  selector:
+    app.kubernetes.io/name: argo-cd-repo-server
+    app.kubernetes.io/instance: argo-cd

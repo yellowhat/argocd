@@ -1,0 +1,40 @@
+---
+{{- if .Values.monitoring.podMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ template "pihole.fullname" . }}-prometheus-exporter
+  {{- with .Values.monitoring.podMonitor.namespace }}
+  namespace: {{ . }}
+  {{- end }}
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.podMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  podMetricsEndpoints:
+  - port: prometheus
+    path: /metrics
+{{- if .Values.monitoring.podMonitor.interval }}
+    interval: {{ .Values.monitoring.podMonitor.interval }}
+{{- end }}
+{{- if .Values.monitoring.podMonitor.bearerTokenFile }}
+    bearerTokenFile: {{ .Values.monitoring.podMonitor.bearerTokenFile }}
+{{- end }}
+{{- if .Values.monitoring.podMonitor.bearerTokenSecret }}
+    bearerTokenSecret:
+      name: {{ .Values.monitoring.podMonitor.bearerTokenSecret.name }}
+      key: {{ .Values.monitoring.podMonitor.bearerTokenSecret.key }}
+      {{- if .Values.monitoring.podMonitor.bearerTokenSecret.optional }}
+      optional: {{ .Values.monitoring.podMonitor.bearerTokenSecret.optional }}
+      {{- end }}
+{{- end }}
+  jobLabel: {{ template "pihole.fullname" . }}-prometheus-exporter
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "pihole.selectorLabels" . | nindent 6 }}
+{{- end }}

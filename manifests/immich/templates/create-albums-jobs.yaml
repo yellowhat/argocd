@@ -1,0 +1,47 @@
+---
+# Source: immich/templates/create-albums-jobs.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-albums
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      name: create-albums
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 65534
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: create
+          image: docker.io/python:3.12.5-alpine
+          command:
+            - python3
+          args:
+            - /create-albums.py
+          env:
+            - name: HOST
+              value: "immich"
+            - name: PORT
+              value: "8080"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: config
+              mountPath: /create-albums.py
+              subPath: create-albums.py
+      volumes:
+        - name: config
+          configMap:
+            name: create-albums

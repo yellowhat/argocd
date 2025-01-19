@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test
+data:
+  key0: dmFzbDA=
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: test
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: "Replace"
+  startingDeadlineSeconds: 0
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  workflowSpec:
+    entrypoint: git-clone
+    templates:
+      - name: git-clone
+        inputs:
+          artifacts:
+            - name: source
+              path: /src
+              git:
+                # repo: https://gitlab.com/yellowhat-labs/mule.git
+                repo: https://github.com/yellowhat/argocd.git
+                depth: 1
+            - name: kubectl
+              path: /bin/kubectl
+              mode: 0755
+              http:
+                url: https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl
+        container:
+          image: python:3.11.2-alpine
+          command: [sh, -c]
+          args: ["ls -l /src /bin/kubectl"]
+          workingDir: /src
+      - name: show-secret
+        container:
+          image: python:3.11.2-alpine
+          command: [sh, -c]
+          args:
+            - |
+              date;
+              echo "secret from env: $MYSECRET";
+              date;
+          env:
+            - name: MYSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: test
+                  key: key0

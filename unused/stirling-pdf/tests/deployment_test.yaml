@@ -1,0 +1,227 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should pass with default values
+    release:
+      name: my-release
+      namespace: my-namespace
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: my-release-stirling-pdf
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: my-release
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: stirling-pdf
+      - notExists:
+          path: metadata.annotations
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - exists:
+          path: spec.strategy.rollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 1
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 0
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/instance: my-release
+            app.kubernetes.io/name: stirling-pdf
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/instance: my-release
+            app.kubernetes.io/name: stirling-pdf
+      - notExists:
+          path: spec.template.spec.imagePullSecrets
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: stirling-pdf
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+      - isNullOrEmpty:
+          path: spec.template.spec.securityContext
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].env
+      - notExists:
+          path: spec.template.spec.containers[0].resources
+      - notExists:
+          path: spec.template.spec.containers[0].nodeSelector
+      - notExists:
+          path: spec.template.spec.containers[0].affinity
+      - notExists:
+          path: spec.template.spec.containers[0].tolerations
+
+  - it: should change replica count
+    set:
+      replicaCount: 3
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should change strategy type
+    set:
+      strategyType: Recreate
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - notExists:
+          path: spec.rollingUpdate
+
+  - it: should change maxSurge and maxUnavailable
+    set:
+      strategyType: RollingUpdate
+      maxSurge: 2
+      maxUnavailable: 1
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 2
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
+
+  - it: should add annotations to the pod
+    set:
+      podAnnotations:
+        foo: bar
+        key: val
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations.foo
+          value: bar
+      - equal:
+          path: spec.template.metadata.annotations.key
+          value: val
+
+  - it: should change the imagePullPolicy
+    set:
+      image:
+        pullPolicy: IfNotPresent
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should change pod securityContext
+    set:
+      podSecurityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsUser: 1000
+            fsGroup: 1000
+
+  - it: should add environmental variables
+    set:
+      extraEnvVars:
+        FOO: BAR
+        KEY: VAL
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: FOO
+              value: BAR
+            - name: KEY
+              value: VAL
+
+  - it: should set resources requests/limits
+    set:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+
+  - it: should set nodeSelector
+    set:
+      nodeSelector:
+        node-type: worker
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            node-type: worker
+
+  - it: should set affinity rules
+    set:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: my-app
+              topologyKey: kubernetes.io/hostname
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: my-app
+                  topologyKey: kubernetes.io/hostname
+
+  - it: should set tolerations
+    set:
+      tolerations:
+        - key: node.kubernetes.io/disk-pressure
+          operator: Exists
+          effect: NoSchedule
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: node.kubernetes.io/disk-pressure
+              operator: Exists
+              effect: NoSchedule

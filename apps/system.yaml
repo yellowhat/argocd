@@ -1,0 +1,49 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: system
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+    # Use foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    path: manifests/system
+    repoURL: https://github.com/yellowhat/argocd
+    # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+
+    # path: charts/system
+    # repoURL: https://github.com/yellowhat/argocd
+    # # repoURL: https://gitlab.com/yellowhat-labs/mule.git
+    # targetRevision: main
+  destination:
+    namespace: system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false # Disabled due to high cpu usage
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: system-sealed-secrets
+      jqPathExpressions:
+        - .spec.template.spec.containers
+    - group: apps
+      kind: StatefulSet
+      name: system-loki
+      jqPathExpressions:
+        - .spec.volumeClaimTemplates
+    # https://github.com/argoproj/argo-cd/issues/16640
+    - kind: PersistentVolume
+      jsonPointers:
+        - /status/lastPhaseTransitionTime

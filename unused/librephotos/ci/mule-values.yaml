@@ -1,0 +1,25 @@
+---
+service:
+  proxy:
+    type: NodePort
+
+dataVolume:
+  storageClassName: librephotos
+
+postgresql:
+  enabled: true
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    persistence:
+      enabled: false
+
+redis:
+  enabled: true
+  master:
+    persistence:
+      enabled: false
+  replica:
+    persistence:
+      enabled: false

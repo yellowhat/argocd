@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "pihole.fullname" . }}-test-api"
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    ignore-check.kube-linter.io/no-liveness-probe: "Just test"
+    ignore-check.kube-linter.io/no-readiness-probe: "Just test"
+spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+  containers:
+    - name: curl
+      image: curlimages/curl:7.88.1
+      args:
+        - curl
+        - --verbose
+        - 'http://{{ include "pihole.fullname" . }}-web.{{ .Release.Namespace }}.svc.cluster.local:80/admin/api.php'
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+  restartPolicy: Never

@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "pihole.fullname" . }}-test-dns"
+  labels:
+    {{- include "pihole.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    ignore-check.kube-linter.io/no-liveness-probe: "Just test"
+    ignore-check.kube-linter.io/no-readiness-probe: "Just test"
+    ignore-check.kube-linter.io/latest-tag: "Only latest available"
+spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+  containers:
+    - name: dig
+      image: mbentley/bind-tools:latest
+      args:
+        - 'dig'
+        - '@{{ include "pihole.fullname" . }}-dns-udp.{{ .Release.Namespace }}.svc.cluster.local'
+        - 'google.com'
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+  restartPolicy: Never

@@ -1,0 +1,164 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+
+# -- Replaces the generated name
+fullnameOverride: ""
+
+# -- Number of replicas
+replicaCount: 1
+
+# -- Deployment strategy
+strategyType: RollingUpdate
+
+# -- Maximum number of Pods that can be created over the desired number of Pods (RollingUpdate)
+maxSurge: 1
+
+# -- Maximum number of Pods that can be unavailable during the update process (RollingUpdate)
+maxUnavailable: 0
+
+image:
+  # -- Repository to pull the image from
+  repository: ghcr.io/0xerr0r/blocky
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: IfNotPresent
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+
+# -- Privileges and access control settings for a container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_BIND_SERVICE
+  readOnlyRootFilesystem: true
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraEnvVars: {}
+  # TZ: UTC
+
+# -- Extra volume definition
+extraVolumes: []
+
+# -- Extra volume mount definition
+extraVolumeMounts: []
+
+# -- Service
+service:
+  labels: {}
+  annotations: {}
+    # io.cilium/lb-ipam-ips: 192.168.1.201
+  type: ClusterIP
+  ports:
+    dns_udp: 53
+    dns_tcp: 53
+    http: 80
+    https: 443
+  externalTrafficPolicy: Local  # preserve the client source IP instead of the node IP
+
+# -- Enable metrics
+metrics:
+  enabled: false
+  # -- Create and configure serviceMonitor
+  serviceMonitor:
+    # -- Additional labels
+    labels: {}
+    # -- Interval at which Prometheus should scrape metrics
+    interval: 30s
+    # -- Timeout after which the scrape is ended
+    scrapeTimeout: 10s
+    # -- The Kubernetes `Endpoints` label to use as the Prometheus job name
+    jobLabel: ""
+    # -- TargetLabels transfers labels from the Kubernetes `Service`` onto the created metrics.
+    targetLabels: []
+    # -- PodTargetLabels transfers labels on the Kubernetes `Pod`` onto the created metrics.
+    podTargetLabels: []
+  # -- Create and configure PrometheusRules
+  prometheusRule:
+    enabled: false
+    labels: {}
+    rules: []
+      # - alert: BlockyDisabled
+      #   annotations:
+      #     description: Blocky's ad blocking has been disabled for 15min.
+      #       Please re-enable protection.
+      #     summary: Blocky is disabled.
+      #   expr: |
+      #     blocky_blocking_enabled == 0
+      #   for: 15m
+      #   labels:
+      #     severity: critical
+
+# -- Config file (https://github.com/0xERR0R/blocky/blob/main/docs/config.yml)
+config:
+  ports:
+    # DNS listener port(s) and bind ip address(es)
+    dns: 5353
+    # DoT (DNS-over-TLS) listener port(s) and bind ip address(es)
+    tls: 8053
+    # HTTP (prometheus, pprof, REST API) listener port(s) and optional bind ip address(es)
+    http: 8080
+    # HTTPS (prometheus, pprof, REST API) listener port(s) and optional bind ip address(es)
+    https: 8443
+
+  prometheus:
+    enable: true
+    path: /metrics
+
+  upstreams:
+    strategy: parallel_best
+    groups:
+      default:
+        - tcp-tls:1.1.1.1  # one.one.one.one
+        - tcp-tls:1.0.0.1  # one.one.one.one
+        - tcp-tls:dns.digitale-gesellschaft.ch:853
+        - https://dns.digitale-gesellschaft.ch/dns-query
+        - tcp-tls:fdns1.dismail.de:853
+        - tcp-tls:fdns2.dismail.de:853
+        - tcp-tls:dnsforge.de:853
+        - https://dnsforge.de/dns-query
+        - tcp-tls:clean.dnsforge.de:853
+        - https://clean.dnsforge.de/dns-query
+        - https://anycast.uncensoreddns.org/dns-query
+        - https://unicast.uncensoreddns.org/dns-query
+        - tcp-tls:dns3.digitalcourage.de:853
+
+  bootstrapDns:
+    - tcp+udp:1.1.1.1
+    - upstream: https://dns.digitale-gesellschaft.ch/dns-query
+      ips:
+        - 185.95.218.42
+
+  blocking:
+    denylists:
+      ads:
+        - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+    clientGroupsBlock:
+      default:
+        - ads

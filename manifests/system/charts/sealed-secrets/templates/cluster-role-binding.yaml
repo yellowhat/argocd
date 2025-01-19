@@ -1,0 +1,23 @@
+---
+# Source: system/charts/sealed-secrets/templates/cluster-role-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system-sealed-secrets
+  labels:
+    app.kubernetes.io/name: sealed-secrets
+    helm.sh/chart: sealed-secrets-2.16.1
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 0.27.1
+    app.kubernetes.io/part-of: sealed-secrets
+  annotations:
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: secrets-unsealer
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: system-sealed-secrets
+    namespace: system

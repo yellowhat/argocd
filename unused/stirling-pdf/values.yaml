@@ -1,0 +1,105 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+
+# -- Replaces the generated name
+fullnameOverride: ""
+
+# -- Number of replicas
+replicaCount: 1
+
+# -- Deployment strategy
+strategyType: RollingUpdate
+
+# -- Maximum number of Pods that can be created over the desired number of Pods (RollingUpdate)
+maxSurge: 1
+
+# -- Maximum number of Pods that can be unavailable during the update process (RollingUpdate)
+maxUnavailable: 0
+
+image:
+  # -- Repository to pull the image from
+  repository: ghcr.io/yellowhat/registry/stirling-pdf
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: Always
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional deployment annotations
+annotations: {}
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext: {}
+
+# -- Privileges and access control settings for a container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - NET_RAW
+    add:
+      # From 0.22.2, init.sh does some chown on boot
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_SETUID
+      - CAP_SETGID
+  # Required to write logs and chown on boot
+  readOnlyRootFilesystem: false
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraEnvVars: {}
+# TZ: UTC
+
+# -- Extra environment variables from secrets
+extraEnvVarsSecret: {}
+# env_var:
+#   name: secret-name
+#   key: secret-key
+
+service:
+  labels: {}
+  annotations: {}
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  ingressClassName: ""
+  annotations: {}
+  hosts: []
+  # - host: example.local
+  #   paths:
+  #     - path: /
+  #       pathType: ImplementationSpecific
+  tls: []
+  # - secretName: example-tls
+  #   hosts:
+  #     - example.local
+
+# -- Extra manifests to deploy as an array
+extraManifests: []
+# - apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#   labels:
+#     name: extra
+#   data:
+#     extra-data: "value"

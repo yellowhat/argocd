@@ -1,0 +1,28 @@
+---
+# Source: immich/charts/valkey/templates/master/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-valkey-master
+  namespace: "immich"
+  labels:
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: valkey
+    app.kubernetes.io/version: 7.2.6
+    helm.sh/chart: valkey-0.3.15
+    app.kubernetes.io/component: master
+    app.kubernetes.io/part-of: valkey
+spec:
+  type: ClusterIP
+  internalTrafficPolicy: Cluster
+  sessionAffinity: None
+  ports:
+    - name: tcp-redis
+      port: 6379
+      targetPort: redis
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/name: valkey
+    app.kubernetes.io/component: master

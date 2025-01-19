@@ -1,0 +1,25 @@
+---
+# Source: argo-cd/templates/prometheusrules.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: custom-argo-cd
+spec:
+  groups:
+    - name: custom-argo-cd
+      rules:
+        - alert: ArgoCDServiceNotSynced
+          expr: 'argocd_app_info{sync_status!="Synced"} != 0'
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            message: ArgoCD service not synced
+
+        - alert: ArgoCDServiceUnhealthy
+          expr: 'argocd_app_info{health_status!="Healthy"} != 0'
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            message: ArgoCD service unhealthy

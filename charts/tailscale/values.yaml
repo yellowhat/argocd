@@ -1,0 +1,77 @@
+---
+# -- Replaces the name of the chart in the Chart.yaml file
+nameOverride: ""
+
+# -- Replaces the generated name
+fullnameOverride: ""
+
+image:
+  # -- Repository to pull the image from
+  repository: ghcr.io/tailscale/tailscale
+  # -- Image tag, if empty it will get it from the chart's appVersion
+  tag: ""
+  # -- Pull policy
+  pullPolicy: IfNotPresent
+
+# -- Secret name for pulling images from private repository
+imagePullSecrets: []
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Privileges and access control settings for a Pod (all containers in a pod)
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+
+# -- Privileges and access control settings for a container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# -- Node selection constraint
+nodeSelector: {}
+
+# -- Toleration for taints
+tolerations: []
+
+# -- Affinity rules
+affinity: {}
+
+# -- CPU/MEM resources
+resources: {}
+
+# -- Extra volume definition
+extraVolumes:
+  # tailscaled write files to /tmp
+  - name: tmp
+    emptyDir: {}
+
+# -- Extra volume mount definition
+extraVolumeMounts:
+  # tailscaled write files to /tmp
+  - name: tmp
+    mountPath: /tmp
+
+# -- Extra environment variables
+extraEnvVars: {}
+
+# -- Extra environment variables from secrets
+extraEnvVarsSecret: {}
+
+# -- k8s secret name where to store the state
+stateSecretName: tailscale-state
+
+# -- Extra manifests to deploy as an array
+extraManifests: []
+# - apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#   labels:
+#     name: extra
+#   data:
+#     extra-data: "value"

@@ -1,0 +1,88 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    chart: cilium
+    repoURL: https://helm.cilium.io
+    targetRevision: 1.13.0
+    helm:
+      # valueFiles:
+      #   - apps/cilium-values.yaml
+      # parameters:
+      #    - name: cdrs.enabled
+      #      value: "true"
+      values: |
+        operator:
+          enabled: true
+          replicas: 1
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              labels:
+                release: system
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            labels:
+              release: system
+        hubble:
+          enabled: true
+          relay:
+            enabled: true
+            prometheus:
+              enabled: true
+              serviceMonitor:
+                enabled: true
+                labels:
+                  release: system
+          tls:
+            enabled: false
+          ui:
+            enabled: true
+          metrics:
+            serviceMonitor:
+              enabled: true
+              labels:
+                release: system
+            enableOpenMetrics: true
+            enabled:
+              - dns
+              - drop
+              - tcp
+              - icmp
+              - "flow:sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+              - "kafka:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+              - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+            dashboards:
+              enabled: true
+              namespace: system
+              annotations:
+                grafana_folder: "Hubble"
+    #     # nodeinit:
+    #     #   enabled: true
+    #     #   reconfigureKubelet: true
+    #     #   restartPods: true
+  destination:
+    namespace: cilium
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    # retry:
+    #   limit: 5
+    #   backoff:
+    #     duration: 20s
+    #     maxDuration: 10m0s
+    #     factor: 2
+    syncOptions:
+      - CreateNamespace=true

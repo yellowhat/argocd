@@ -1,0 +1,46 @@
+---
+# Source: system/charts/kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: system-kube-prometheus-sta-grafana-datasource
+  namespace: system
+  labels:
+    grafana_datasource: "1"
+    app: kube-prometheus-stack-grafana
+    
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: system
+    app.kubernetes.io/version: "61.9.0"
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    chart: kube-prometheus-stack-61.9.0
+    release: "system"
+    heritage: "Helm"
+data:
+  datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: "Prometheus"
+      type: prometheus
+      uid: prometheus
+      url: http://system-kube-prometheus-sta-prometheus.system:9090/
+      access: proxy
+      isDefault: true
+      jsonData:
+        httpMethod: POST
+        timeInterval: 30s
+    - name: "Alertmanager"
+      type: alertmanager
+      uid: alertmanager
+      url: http://system-kube-prometheus-sta-alertmanager.system:9093/
+      access: proxy
+      jsonData:
+        handleGrafanaManagedAlerts: false
+        implementation: prometheus
+    - jsonData:
+        timeout: 600
+      name: loki
+      orgId: 1
+      type: loki
+      url: http://system-loki:3100
+      version: 1
